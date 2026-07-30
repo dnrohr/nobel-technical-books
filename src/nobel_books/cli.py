@@ -28,14 +28,17 @@ from nobel_books.pipeline.openlibrary import (
     discover_openlibrary,
     export_openlibrary_identity_review,
 )
+from nobel_books.reconciliation.editions import reconcile_editions
 
 app = typer.Typer(help="Build a provenance-rich bibliography of Nobel laureate books.")
 db_app = typer.Typer(help="Manage the bibliography database.")
 laureates_app = typer.Typer(help="Import and inspect Nobel laureates.")
 identities_app = typer.Typer(help="Resolve and review external person identities.")
+reconcile_app = typer.Typer(help="Reconcile normalized source records.")
 app.add_typer(db_app, name="db")
 app.add_typer(laureates_app, name="laureates")
 app.add_typer(identities_app, name="identities")
+app.add_typer(reconcile_app, name="reconcile")
 
 
 def version_callback(value: bool) -> None:
@@ -275,3 +278,24 @@ def discover(
     finally:
         engine.dispose()
     typer.echo(message)
+
+
+@app.command("normalize")
+def normalize() -> None:
+    """Normalize and deterministically reconcile edition source records."""
+
+    settings = get_settings()
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            editions, proposals = reconcile_editions(session)
+    finally:
+        engine.dispose()
+    typer.echo(f"Reconciled {editions} edition(s); recorded {proposals} merge proposal(s).")
+
+
+@reconcile_app.command("editions")
+def reconcile_editions_command() -> None:
+    """Run edition normalization and reconciliation."""
+
+    normalize()

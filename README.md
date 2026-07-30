@@ -3,7 +3,7 @@
 A reproducible, provenance-rich bibliography of books written or edited by Nobel
 laureates in Physics, Chemistry, and Physiology or Medicine.
 
-This repository currently implements **Milestones 0–5** from [DESIGN.md](DESIGN.md):
+This repository currently implements **Milestones 0–6** from [DESIGN.md](DESIGN.md):
 the project scaffold, authoritative Nobel laureate ingestion, exact Wikidata
 identity resolution, Wikidata and Google Books discovery, and cautious Open
 Library enrichment.
@@ -28,6 +28,8 @@ uv run nobel-books identities review-export
 uv run nobel-books discover --source wikidata
 uv run nobel-books discover --source openlibrary
 uv run nobel-books discover --source google-books --laureate-id 102
+uv run nobel-books normalize
+uv run nobel-books reconcile editions
 ```
 
 Configuration is loaded from `config/default.yaml`, then an optional `.env` file,
@@ -95,3 +97,13 @@ initials/surname author variants. Every request uses `printType=books`, pages wi
 and redacts API keys from provenance URLs. Volume IDs are idempotent across query
 variants. Contributor strings are evaluated conservatively; unsupported matches
 remain `needs_review` candidates with an explicit ambiguous-relationship assertion.
+
+## Milestone 6 behavior
+
+Edition normalization preserves exact source values while producing deterministic
+comparison keys for titles, partial dates, languages, contributor roles, ISBNs,
+OCLC numbers, and DOIs. ISBN-10/13 checksums are validated and valid ISBN-10
+values gain their ISBN-13 equivalent; invalid identifiers remain attached as
+issues. Exact ISBN, OCLC, or DOI matches auto-merge. Fuzzy evidence creates
+scored proposals, but conflicting valid identifiers always block fuzzy merging.
+Cluster membership and selected metadata are stable regardless of input order.

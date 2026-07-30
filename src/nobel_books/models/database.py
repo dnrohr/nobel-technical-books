@@ -245,3 +245,65 @@ class DiscoveryQuery(Base):
     status: Mapped[str] = mapped_column(String(20))
     result_count: Mapped[int] = mapped_column(Integer, default=0)
     executed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class Edition(Base):
+    """A reconciled publication manifestation built from source records."""
+
+    __tablename__ = "edition"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    cluster_key: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    canonical_work_id: Mapped[int | None] = mapped_column(Integer, index=True)
+    title: Mapped[str] = mapped_column(Text)
+    subtitle: Mapped[str | None] = mapped_column(Text)
+    normalized_title: Mapped[str] = mapped_column(Text, index=True)
+    language: Mapped[str | None] = mapped_column(String(30))
+    publication_date_raw: Mapped[str | None] = mapped_column(Text)
+    publication_year: Mapped[int | None] = mapped_column(Integer, index=True)
+    edition_statement: Mapped[str | None] = mapped_column(Text)
+    publisher: Mapped[str | None] = mapped_column(Text)
+    publication_place: Mapped[str | None] = mapped_column(Text)
+    format: Mapped[str | None] = mapped_column(String(40))
+    page_count: Mapped[int | None] = mapped_column(Integer)
+    isbn10: Mapped[str | None] = mapped_column(String(10), index=True)
+    isbn13: Mapped[str | None] = mapped_column(String(13), index=True)
+    doi: Mapped[str | None] = mapped_column(Text, index=True)
+    oclc: Mapped[str | None] = mapped_column(Text, index=True)
+    wikidata_qid: Mapped[str | None] = mapped_column(Text, index=True)
+    openlibrary_edition_id: Mapped[str | None] = mapped_column(Text, index=True)
+    google_books_id: Mapped[str | None] = mapped_column(Text, index=True)
+    review_status: Mapped[str] = mapped_column(String(30), index=True)
+    overall_confidence: Mapped[float] = mapped_column(Float)
+    merge_method: Mapped[str] = mapped_column(String(40))
+    identifier_issues: Mapped[list[dict[str, object]]] = mapped_column(JSON)
+
+
+class EditionSourceRecord(Base):
+    """Membership of a source-native record in a reconciled edition."""
+
+    __tablename__ = "edition_source_record"
+
+    source_record_id: Mapped[int] = mapped_column(ForeignKey("source_record.id"), primary_key=True)
+    edition_id: Mapped[int] = mapped_column(ForeignKey("edition.id"), index=True)
+
+
+class EditionMergeProposal(Base):
+    """Deterministic evidence and conflicts for a candidate edition merge."""
+
+    __tablename__ = "edition_merge_proposal"
+    __table_args__ = (
+        UniqueConstraint(
+            "left_source_record_id",
+            "right_source_record_id",
+            name="uq_edition_merge_pair",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    left_source_record_id: Mapped[int] = mapped_column(ForeignKey("source_record.id"), index=True)
+    right_source_record_id: Mapped[int] = mapped_column(ForeignKey("source_record.id"), index=True)
+    confidence: Mapped[float] = mapped_column(Float, index=True)
+    status: Mapped[str] = mapped_column(String(30), index=True)
+    evidence_json: Mapped[dict[str, object]] = mapped_column(JSON)
+    conflicts_json: Mapped[list[str]] = mapped_column(JSON)
