@@ -1,0 +1,25 @@
+{
+  "laureates": [
+    {
+      "id": "2",
+      "knownName": {"en": "Ada Example"},
+      "givenName": {"en": "Ada"},
+      "familyName": {"en": "Example"},
+      "gender": "female",
+      "birth": {"date": "1900-01-01"},
+      "nobelPrizes": [
+        {
+          "awardYear": "1950",
+          "category": {"en": "Physiology or Medicine"},
+          "motivation": {"en": "for fixture science"},
+          "prizeAmountShare": "2"
+        },
+        {
+          "awardYear": "1951",
+          "category": {"en": "Peace"}
+        }
+      ]
+    }
+  ],
+  "meta": {"offset": 2, "limit": 2, "count": 3}
+}

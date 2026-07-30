@@ -3,9 +3,8 @@
 A reproducible, provenance-rich bibliography of books written or edited by Nobel
 laureates in Physics, Chemistry, and Physiology or Medicine.
 
-This repository currently implements **Milestone 0** from [DESIGN.md](DESIGN.md):
-the project scaffold, CLI, configuration, structured logging, database foundation,
-and initial migration. It intentionally does not ingest live Nobel data yet.
+This repository currently implements **Milestones 0–1** from [DESIGN.md](DESIGN.md):
+the project scaffold plus authoritative Nobel laureate ingestion.
 
 ## Requirements
 
@@ -20,6 +19,8 @@ uv run nobel-books --help
 uv run nobel-books init
 uv run nobel-books db upgrade
 uv run nobel-books status
+uv run nobel-books laureates sync
+uv run nobel-books laureates list
 ```
 
 Configuration is loaded from `config/default.yaml`, then an optional `.env` file,
@@ -42,3 +43,10 @@ uv run pytest
 ```
 
 Tests are fixture-driven and must not call live external services.
+
+## Milestone 1 behavior
+
+`laureates sync` follows every Nobel API page, stores each raw response in the
+content-addressed cache, excludes organizations, retains only Physics, Chemistry,
+and Physiology or Medicine awards, and safely upserts laureates and prize records.
+Its summary reports laureate totals and award counts by category and year.

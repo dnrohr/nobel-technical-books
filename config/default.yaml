@@ -12,6 +12,7 @@ sources:
   nobel:
     enabled: true
     base_url: "https://api.nobelprize.org/2.1"
+    requests_per_second: 1.0
+    page_size: 100
 
 log_level: "INFO"
-

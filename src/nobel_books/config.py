@@ -6,7 +6,7 @@ from typing import Any
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 
 from nobel_books.errors import ConfigurationError
 
@@ -28,6 +28,8 @@ class SourceConfig(BaseModel):
 
     enabled: bool = True
     base_url: str | None = None
+    requests_per_second: float = 1.0
+    page_size: int = 100
 
 
 class Settings(BaseSettings):
@@ -44,6 +46,19 @@ class Settings(BaseSettings):
     categories: list[str] = Field(default_factory=lambda: ["physics", "chemistry", "medicine"])
     sources: dict[str, SourceConfig] = Field(default_factory=dict)
     log_level: str = "INFO"
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        """Let environment and dotenv values override YAML-backed init values."""
+
+        return env_settings, dotenv_settings, init_settings, file_secret_settings
 
 
 def _yaml_settings(path: Path) -> dict[str, Any]:

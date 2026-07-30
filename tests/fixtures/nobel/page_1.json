@@ -1,0 +1,41 @@
+{
+  "laureates": [
+    {
+      "id": "1",
+      "knownName": {"en": "Marie Curie"},
+      "givenName": {"en": "Marie"},
+      "familyName": {"en": "Curie"},
+      "gender": "female",
+      "birth": {"date": "1867-11-07"},
+      "death": {"date": "1934-07-04"},
+      "nobelPrizes": [
+        {
+          "awardYear": "1903",
+          "category": {"en": "Physics"},
+          "motivation": {"en": "for research on radiation"},
+          "prizeAmountShare": "4"
+        },
+        {
+          "awardYear": "1911",
+          "category": {"en": "Chemistry"},
+          "motivation": {"en": "for the discovery of radium"},
+          "prizeAmountShare": "1"
+        },
+        {
+          "awardYear": "1911",
+          "category": {"en": "Chemistry"},
+          "motivation": {"en": "duplicate source record"},
+          "prizeAmountShare": "1"
+        }
+      ]
+    },
+    {
+      "id": "org-1",
+      "orgName": {"en": "Example Organization"},
+      "nobelPrizes": [
+        {"awardYear": "2000", "category": {"en": "Physiology or Medicine"}}
+      ]
+    }
+  ],
+  "meta": {"offset": 0, "limit": 2, "count": 3}
+}
