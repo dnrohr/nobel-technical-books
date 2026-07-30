@@ -16,6 +16,7 @@ from nobel_books.adapters.nobel import NobelApiAdapter
 from nobel_books.adapters.openalex import OpenAlexAdapter
 from nobel_books.adapters.openlibrary import OpenLibraryAdapter
 from nobel_books.adapters.wikidata import WikidataBookAdapter, WikidataIdentityAdapter
+from nobel_books.adapters.wikipedia import WikipediaAdapter
 from nobel_books.cache import RawResponseCache
 from nobel_books.config import get_settings
 from nobel_books.db import database_status, make_engine, upgrade_database
@@ -35,6 +36,7 @@ from nobel_books.pipeline.scholarly import (
     enrich_crossref,
     write_source_limitations,
 )
+from nobel_books.pipeline.wikipedia import discover_wikipedia
 from nobel_books.reconciliation.editions import reconcile_editions
 from nobel_books.reconciliation.works import cluster_works
 
@@ -208,6 +210,7 @@ def discover(
         "google-books",
         "openalex",
         "crossref",
+        "wikipedia",
     }:
         typer.echo(f"Error: source is not implemented: {source_name}", err=True)
         raise typer.Exit(code=1)
@@ -319,7 +322,7 @@ def discover(
                     f"OpenAlex: authors={scholarly.authors_resolved}, "
                     f"books={scholarly.openalex_books}, fetches={scholarly.fetches}"
                 )
-            else:
+            elif source_name == "crossref":
                 contact = (
                     os.environ.get(source.mailto_env) if source.mailto_env else None
                 ) or settings.project.contact_email
@@ -341,6 +344,26 @@ def discover(
                     f"Crossref: live_book_types={scholarly.crossref_book_types}, "
                     f"DOIs_enriched={scholarly.crossref_dois}, "
                     f"fetches={scholarly.fetches}"
+                )
+            else:
+                wikipedia_adapter = WikipediaAdapter(
+                    source.base_url,
+                    settings.project.user_agent,
+                    requests_per_second=source.requests_per_second,
+                )
+                wikipedia = discover_wikipedia(
+                    session,
+                    wikipedia_adapter,
+                    RawResponseCache(),
+                    headings=source.bibliography_headings,
+                    max_authors=source.max_authors_per_run,
+                    nobel_api_id=laureate_id,
+                )
+                message = (
+                    f"Wikipedia: pages={wikipedia.pages_with_sections}, "
+                    f"sections={wikipedia.sections_fetched}, "
+                    f"candidates={wikipedia.candidates}, "
+                    f"failures={wikipedia.failures}"
                 )
     finally:
         engine.dispose()

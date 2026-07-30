@@ -3,7 +3,7 @@
 A reproducible, provenance-rich bibliography of books written or edited by Nobel
 laureates in Physics, Chemistry, and Physiology or Medicine.
 
-This repository currently implements **Milestones 0–8** from [DESIGN.md](DESIGN.md):
+This repository currently implements **Milestones 0–9** from [DESIGN.md](DESIGN.md):
 the project scaffold, authoritative Nobel laureate ingestion, exact Wikidata
 identity resolution, Wikidata and Google Books discovery, and cautious Open
 Library enrichment.
@@ -33,6 +33,7 @@ uv run nobel-books reconcile editions
 uv run nobel-books reconcile works
 uv run nobel-books discover --source openalex --laureate-id 102
 uv run nobel-books discover --source crossref
+uv run nobel-books discover --source wikipedia --laureate-id 102
 ```
 
 Configuration is loaded from `config/default.yaml`, then an optional `.env` file,
@@ -131,3 +132,12 @@ discovers currently supported book-like types and enriches existing DOI-bearing
 editions through the polite pool with contact information. Coverage boundaries,
 including the XPAC quality warning and the omission of general/older books, are
 written to `data/exports/source_limitations.json`.
+
+## Milestone 9 behavior
+
+Wikipedia fallback discovery uses only the MediaWiki Action API. It first reads
+section metadata, matches configurable bibliography headings, and then fetches
+only those section indexes. Conservative list and `Cite book` parsing emits
+low-confidence, `needs_corroboration` candidates. Each assertion records the
+exact page ID, revision ID, section, and cached response. Page or section
+failures increment the run summary and do not stop other laureates.

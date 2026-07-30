@@ -35,6 +35,7 @@ class SourceConfig(BaseModel):
     api_key_env: str | None = None
     mailto_env: str | None = None
     include_xpac: bool = False
+    bibliography_headings: list[str] = Field(default_factory=list)
 
 
 class Settings(BaseSettings):

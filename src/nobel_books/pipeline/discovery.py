@@ -80,6 +80,9 @@ def _upsert_assertion(
     record: SourceRecord,
     predicate: str,
     value: object,
+    *,
+    reliability_class: str = "B",
+    confidence: float = 0.9,
 ) -> bool:
     encoded = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     value_hash = hashlib.sha256(encoded.encode()).hexdigest()
@@ -102,8 +105,8 @@ def _upsert_assertion(
             value_json=value,
             value_hash=value_hash,
             source_record_id=record.id,
-            reliability_class="B",
-            confidence=0.9,
+            reliability_class=reliability_class,
+            confidence=confidence,
             is_selected=False,
             is_contradicted=False,
         )

@@ -47,5 +47,17 @@ sources:
     requests_per_second: 1.0
     page_size: 100
     mailto_env: "CROSSREF_MAILTO"
+  wikipedia:
+    enabled: true
+    base_url: "https://en.wikipedia.org/w/api.php"
+    requests_per_second: 0.5
+    max_authors_per_run: 10
+    bibliography_headings:
+      - bibliography
+      - books
+      - selected works
+      - publications
+      - works
+      - major works
 
 log_level: "INFO"
