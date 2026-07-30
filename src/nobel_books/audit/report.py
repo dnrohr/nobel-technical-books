@@ -19,6 +19,7 @@ from nobel_books.models.database import (
     ManualOverride,
     SourceRecord,
 )
+from nobel_books.pipeline.scholarly import source_limitations_document
 
 
 def _contribution_key(laureate: Laureate, work: CanonicalWork, role: str) -> str:
@@ -225,6 +226,7 @@ def audit_document(
             "incomplete_source_coverage": incomplete,
         },
         "source_contribution_analysis": dict(sorted(source_counts.items())),
+        "source_limitations": source_limitations_document(include_xpac=False),
         "stale_overrides": _stale_overrides(session, valid_keys),
         "regression_bibliographies": regressions,
         "incomplete_summary": {

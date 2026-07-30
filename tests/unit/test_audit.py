@@ -43,6 +43,7 @@ def test_audit_reports_gaps_sources_and_stale_overrides(session: Session) -> Non
     )
 
     assert report["source_contribution_analysis"] == {"wikidata": 2}
+    assert "openalex" in report["source_limitations"]
     assert len(report["stale_overrides"]) == 1
     gaps = report["suspicious_gaps"]
     assert isinstance(gaps, dict)

@@ -25,6 +25,7 @@ from nobel_books.models.database import (
     SourceFetch,
     SourceRecord,
 )
+from nobel_books.pipeline.scholarly import source_limitations_document
 
 
 def _write_csv(path: Path, fields: list[str], rows: list[dict[str, object]]) -> None:
@@ -70,7 +71,10 @@ def export_works_csv(session: Session, path: Path) -> int:
         select(Contribution, Laureate, CanonicalWork)
         .join(Laureate, Laureate.id == Contribution.laureate_id)
         .join(CanonicalWork, CanonicalWork.id == Contribution.canonical_work_id)
-        .where(Contribution.review_status != "rejected")
+        .where(
+            Contribution.review_status != "rejected",
+            Laureate.is_organization.is_(False),
+        )
         .order_by(Laureate.display_name, CanonicalWork.preferred_title)
     ).all()
     for contribution, laureate, work in contributions:
@@ -279,7 +283,9 @@ def export_evidence_csv(session: Session, path: Path) -> int:
 def bibliography_document(session: Session) -> dict[str, object]:
     latest_run = session.scalar(select(PipelineRun).order_by(PipelineRun.id.desc()))
     laureate_items: list[dict[str, object]] = []
-    laureates = session.scalars(select(Laureate).order_by(Laureate.display_name)).all()
+    laureates = session.scalars(
+        select(Laureate).where(Laureate.is_organization.is_(False)).order_by(Laureate.display_name)
+    ).all()
     for laureate in laureates:
         prizes = _prizes(session, laureate.id)
         identifiers: dict[str, list[str]] = defaultdict(list)
@@ -361,6 +367,13 @@ def bibliography_document(session: Session) -> dict[str, object]:
     return {
         "generated_at": datetime.now(UTC).isoformat(),
         "pipeline_run": latest_run.id if latest_run else None,
+        "limitations": {
+            "release_status": (
+                "Machine-generated research dataset; ambiguous and unreviewed "
+                "records require human audit."
+            ),
+            "sources": source_limitations_document(include_xpac=False),
+        },
         "laureates": laureate_items,
     }
 
@@ -388,7 +401,13 @@ def _markdown_section(work: CanonicalWork, role: str) -> str:
 
 
 def export_markdown(session: Session, path: Path) -> int:
-    lines = ["# Nobel Laureate Books", ""]
+    lines = [
+        "# Nobel Laureate Books",
+        "",
+        "> Machine-generated research dataset. Ambiguous and unreviewed records",
+        "> require human audit; source coverage is not comprehensive.",
+        "",
+    ]
     count = 0
     for category, heading in (
         ("physics", "Physics"),
@@ -399,7 +418,10 @@ def export_markdown(session: Session, path: Path) -> int:
         laureates = session.scalars(
             select(Laureate)
             .join(PrizeAward)
-            .where(PrizeAward.category == category)
+            .where(
+                PrizeAward.category == category,
+                Laureate.is_organization.is_(False),
+            )
             .distinct()
             .order_by(Laureate.display_name)
         ).all()
@@ -448,6 +470,38 @@ def export_markdown(session: Session, path: Path) -> int:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines), encoding="utf-8")
     return count
+
+
+def export_limitations(json_path: Path, markdown_path: Path) -> None:
+    document = {
+        "release_status": (
+            "Machine-generated research dataset; ambiguous and unreviewed records "
+            "require human audit."
+        ),
+        "source_limitations": source_limitations_document(include_xpac=False),
+        "redistribution": (
+            "Restricted or proprietary source metadata must not be redistributed "
+            "outside its permitted use."
+        ),
+    }
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    json_path.write_text(
+        json.dumps(document, ensure_ascii=False, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+    lines = [
+        "# Dataset limitations",
+        "",
+        str(document["release_status"]),
+        "",
+        "OpenAlex emphasizes scholarly books and is not comprehensive for memoirs, "
+        "popular books, or older monographs. Crossref covers DOI-registered works and "
+        "is used for corroboration rather than complete discovery.",
+        "",
+        str(document["redistribution"]),
+        "",
+    ]
+    markdown_path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def coverage_document(
@@ -566,6 +620,7 @@ def export_coverage(session: Session, json_path: Path, markdown_path: Path) -> N
 
 
 def export_all(session: Session, output_dir: Path) -> dict[str, int]:
+    export_limitations(output_dir / "limitations.json", output_dir / "LIMITATIONS.md")
     counts = {
         "works": export_works_csv(session, output_dir / "works.csv"),
         "editions": export_editions_csv(session, output_dir / "editions.csv"),

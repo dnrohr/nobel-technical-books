@@ -230,9 +230,12 @@ def test_review_roundtrip_manual_precedence_and_all_exports(tmp_path: Path) -> N
         "bibliography.md",
         "coverage.json",
         "coverage.md",
+        "limitations.json",
+        "LIMITATIONS.md",
     ):
         assert (output_dir / name).exists()
     document = json.loads((output_dir / "bibliography.json").read_text(encoding="utf-8"))
+    assert "limitations" in document
     exported_work = document["laureates"][0]["works"][0]
     assert exported_work["evidence"]
     assert exported_work["editions"][0]["isbn13"] == "9780000000002"

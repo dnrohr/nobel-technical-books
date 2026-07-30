@@ -169,7 +169,9 @@ precedence over later confidence reruns. Export commands produce separate
 `works.csv`, `editions.csv`, and `evidence.csv` files; nested
 `bibliography.json`; a classified Markdown bibliography; and JSON/Markdown
 coverage reports with prior-run deltas. Work and edition exports fail rather than
-silently emitting records without source evidence.
+silently emitting records without source evidence. Every full export also writes
+`LIMITATIONS.md` and `limitations.json`, and machine-readable/human-readable
+bibliographies carry an explicit research-status warning.
 
 ## Milestone 12 behavior
 
