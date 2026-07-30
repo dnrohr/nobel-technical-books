@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from nobel_books import __version__
 from nobel_books.adapters.nobel import NobelApiAdapter
+from nobel_books.adapters.openlibrary import OpenLibraryAdapter
 from nobel_books.adapters.wikidata import WikidataBookAdapter, WikidataIdentityAdapter
 from nobel_books.cache import RawResponseCache
 from nobel_books.config import get_settings
@@ -20,6 +21,10 @@ from nobel_books.models.database import Laureate
 from nobel_books.pipeline.discovery import discover_wikidata_candidates
 from nobel_books.pipeline.identities import export_identity_review, resolve_identities
 from nobel_books.pipeline.laureates import sync_laureates
+from nobel_books.pipeline.openlibrary import (
+    discover_openlibrary,
+    export_openlibrary_identity_review,
+)
 
 app = typer.Typer(help="Build a provenance-rich bibliography of Nobel laureate books.")
 db_app = typer.Typer(help="Manage the bibliography database.")
@@ -176,30 +181,67 @@ def discover(
     source_name: Annotated[
         str, typer.Option("--source", help="Configured candidate source.")
     ] = "wikidata",
+    laureate_id: Annotated[
+        str | None,
+        typer.Option("--laureate-id", help="Limit discovery to one Nobel API ID."),
+    ] = None,
 ) -> None:
     """Discover source-native book candidates without canonical merging."""
 
-    if source_name != "wikidata":
+    if source_name not in {"wikidata", "openlibrary"}:
         typer.echo(f"Error: source is not implemented: {source_name}", err=True)
         raise typer.Exit(code=1)
     settings = get_settings()
-    source = settings.sources.get("wikidata")
+    source = settings.sources.get(source_name)
     if source is None or not source.enabled or source.base_url is None:
-        typer.echo("Error: Wikidata source is not enabled and configured.", err=True)
+        typer.echo(f"Error: {source_name} source is not enabled and configured.", err=True)
         raise typer.Exit(code=1)
-    adapter = WikidataBookAdapter(
-        source.base_url,
-        settings.project.user_agent,
-        batch_size=source.page_size,
-    )
     engine = make_engine(settings.project.database_url)
     try:
         with Session(engine) as session:
-            summary = discover_wikidata_candidates(session, adapter, RawResponseCache())
+            if source_name == "wikidata":
+                wikidata_adapter = WikidataBookAdapter(
+                    source.base_url,
+                    settings.project.user_agent,
+                    batch_size=source.page_size,
+                )
+                summary = discover_wikidata_candidates(
+                    session, wikidata_adapter, RawResponseCache()
+                )
+                message = (
+                    f"Discovered {summary.records} Wikidata candidate(s): "
+                    f"works={summary.works}, editions={summary.editions}, "
+                    f"assertions={summary.assertions}, batches={summary.batches}"
+                )
+            else:
+                if not settings.project.contact_email:
+                    typer.echo(
+                        "Error: project.contact_email is required for Open Library.",
+                        err=True,
+                    )
+                    raise typer.Exit(code=1)
+                user_agent = f"{settings.project.user_agent} {settings.project.contact_email}"
+                openlibrary_adapter = OpenLibraryAdapter(
+                    source.base_url,
+                    user_agent,
+                    requests_per_second=source.requests_per_second,
+                    page_size=source.page_size,
+                )
+                openlibrary_summary = discover_openlibrary(
+                    session,
+                    openlibrary_adapter,
+                    RawResponseCache(),
+                    max_authors=source.max_authors_per_run,
+                    nobel_api_id=laureate_id,
+                )
+                review_path = Path("data/exports/openlibrary_identity_review.csv")
+                review_count = export_openlibrary_identity_review(session, review_path)
+                message = (
+                    f"Open Library: verified_authors={openlibrary_summary.authors_verified}, "
+                    f"review_candidates={review_count}, works={openlibrary_summary.works}, "
+                    f"editions={openlibrary_summary.editions}, "
+                    f"fetches={openlibrary_summary.fetches}"
+                )
     finally:
         engine.dispose()
-    typer.echo(
-        f"Discovered {summary.records} Wikidata candidate(s): "
-        f"works={summary.works}, editions={summary.editions}, "
-        f"assertions={summary.assertions}, batches={summary.batches}"
-    )
+    typer.echo(message)

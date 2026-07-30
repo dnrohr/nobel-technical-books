@@ -1,0 +1,13 @@
+{
+  "size": 1,
+  "entries": [
+    {
+      "key": "/books/OL1M",
+      "title": "First Work",
+      "publish_date": "1910",
+      "publishers": ["Fixture Press"],
+      "isbn_13": ["9780000000002"],
+      "languages": [{"key": "/languages/eng"}]
+    }
+  ]
+}

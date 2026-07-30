@@ -19,5 +19,11 @@ sources:
     base_url: "https://query.wikidata.org/sparql"
     requests_per_second: 0.5
     page_size: 10
+  openlibrary:
+    enabled: true
+    base_url: "https://openlibrary.org"
+    requests_per_second: 0.5
+    page_size: 50
+    max_authors_per_run: 10
 
 log_level: "INFO"

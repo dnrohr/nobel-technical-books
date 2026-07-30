@@ -1,0 +1,11 @@
+{
+  "size": 1,
+  "entries": [
+    {
+      "key": "/books/OL2M",
+      "title": "Second Work",
+      "publish_date": "1912",
+      "oclc_numbers": ["12345"]
+    }
+  ]
+}

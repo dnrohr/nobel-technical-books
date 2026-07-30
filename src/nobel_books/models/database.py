@@ -202,3 +202,28 @@ class Assertion(Base):
     is_selected: Mapped[bool] = mapped_column(Boolean, default=False)
     is_contradicted: Mapped[bool] = mapped_column(Boolean, default=False)
     notes: Mapped[str | None] = mapped_column(Text)
+
+
+class SourceAuthorCandidate(Base):
+    """A scored source-author identity candidate awaiting verification."""
+
+    __tablename__ = "source_author_candidate"
+    __table_args__ = (
+        UniqueConstraint(
+            "laureate_id",
+            "source",
+            "source_author_id",
+            name="uq_source_author_candidate",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    laureate_id: Mapped[int] = mapped_column(ForeignKey("laureate.id"), index=True)
+    source: Mapped[str] = mapped_column(String(50), index=True)
+    source_author_id: Mapped[str] = mapped_column(Text)
+    display_name: Mapped[str] = mapped_column(Text)
+    confidence: Mapped[float] = mapped_column(Float)
+    status: Mapped[str] = mapped_column(String(20), index=True)
+    evidence_json: Mapped[dict[str, object]] = mapped_column(JSON)
+    source_fetch_id: Mapped[int | None] = mapped_column(ForeignKey("source_fetch.id"))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

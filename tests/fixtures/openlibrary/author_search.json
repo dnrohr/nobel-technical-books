@@ -1,0 +1,12 @@
+{
+  "numFound": 1,
+  "docs": [
+    {
+      "key": "OLFALSEA",
+      "name": "Different Person",
+      "alternate_names": ["Not Ada Example"],
+      "birth_date": "1910-01-01",
+      "death_date": "1980-01-01"
+    }
+  ]
+}
