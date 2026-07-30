@@ -29,6 +29,7 @@ from nobel_books.pipeline.openlibrary import (
     export_openlibrary_identity_review,
 )
 from nobel_books.reconciliation.editions import reconcile_editions
+from nobel_books.reconciliation.works import cluster_works
 
 app = typer.Typer(help="Build a provenance-rich bibliography of Nobel laureate books.")
 db_app = typer.Typer(help="Manage the bibliography database.")
@@ -299,3 +300,25 @@ def reconcile_editions_command() -> None:
     """Run edition normalization and reconciliation."""
 
     normalize()
+
+
+@reconcile_app.command("works")
+def reconcile_works_command(
+    review_output: Annotated[
+        Path, typer.Option("--review-output", help="Work merge/split review CSV.")
+    ] = Path("data/exports/work_review_queue.csv"),
+) -> None:
+    """Cluster editions into canonical works and apply durable overrides."""
+
+    settings = get_settings()
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            summary = cluster_works(session, review_path=review_output)
+    finally:
+        engine.dispose()
+    typer.echo(
+        f"Clustered {summary.works} canonical work(s), linked "
+        f"{summary.editions_linked} edition(s), created {summary.series_works} "
+        f"series work(s), and queued {summary.review_items} review item(s)."
+    )

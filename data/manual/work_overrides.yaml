@@ -1,2 +1,13 @@
+# Stable override examples:
+# - target_type: work_cluster
+#   target_key: "wikidata:Q123"
+#   action: merge
+#   payload: {with: "openlibrary:OL456W"}
+#   reason: "Authority records describe the same intellectual work."
+#   reviewer: "initials"
+# - target_type: edition
+#   target_key: "edition:<edition cluster key>"
+#   action: split
+#   payload: {}
+#   reason: "Substantially revised content."
 overrides: []
-

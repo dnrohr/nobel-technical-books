@@ -307,3 +307,91 @@ class EditionMergeProposal(Base):
     status: Mapped[str] = mapped_column(String(30), index=True)
     evidence_json: Mapped[dict[str, object]] = mapped_column(JSON)
     conflicts_json: Mapped[list[str]] = mapped_column(JSON)
+
+
+class CanonicalWork(Base):
+    """A distinct intellectual work containing one or more editions."""
+
+    __tablename__ = "canonical_work"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    cluster_key: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    preferred_title: Mapped[str] = mapped_column(Text)
+    normalized_title: Mapped[str] = mapped_column(Text, index=True)
+    original_title: Mapped[str | None] = mapped_column(Text)
+    original_language: Mapped[str | None] = mapped_column(String(30))
+    first_publication_year: Mapped[int | None] = mapped_column(Integer, index=True)
+    work_type: Mapped[str] = mapped_column(String(40), index=True)
+    technicality_score: Mapped[float | None] = mapped_column(Float)
+    audience_level: Mapped[str | None] = mapped_column(String(30))
+    classification_confidence: Mapped[float | None] = mapped_column(Float)
+    classification_method: Mapped[str | None] = mapped_column(String(40))
+    classification_reason: Mapped[str | None] = mapped_column(Text)
+    series_title: Mapped[str | None] = mapped_column(Text)
+    volume_designation: Mapped[str | None] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
+    review_status: Mapped[str] = mapped_column(String(30), index=True)
+    overall_confidence: Mapped[float] = mapped_column(Float)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class WorkSourceRecord(Base):
+    """Source-native work membership in a canonical work."""
+
+    __tablename__ = "work_source_record"
+
+    source_record_id: Mapped[int] = mapped_column(ForeignKey("source_record.id"), primary_key=True)
+    canonical_work_id: Mapped[int] = mapped_column(ForeignKey("canonical_work.id"), index=True)
+
+
+class WorkRelation(Base):
+    """Typed hierarchy or translation relationship between canonical works."""
+
+    __tablename__ = "work_relation"
+    __table_args__ = (
+        UniqueConstraint(
+            "parent_work_id", "child_work_id", "relation_type", name="uq_work_relation"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    parent_work_id: Mapped[int] = mapped_column(ForeignKey("canonical_work.id"))
+    child_work_id: Mapped[int] = mapped_column(ForeignKey("canonical_work.id"))
+    relation_type: Mapped[str] = mapped_column(String(30))
+    evidence_json: Mapped[dict[str, object]] = mapped_column(JSON)
+
+
+class WorkMergeProposal(Base):
+    """A canonical-work merge or split review item."""
+
+    __tablename__ = "work_merge_proposal"
+    __table_args__ = (
+        UniqueConstraint("left_work_id", "right_work_id", "status", name="uq_work_review_pair"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    left_work_id: Mapped[int] = mapped_column(ForeignKey("canonical_work.id"))
+    right_work_id: Mapped[int] = mapped_column(ForeignKey("canonical_work.id"))
+    confidence: Mapped[float] = mapped_column(Float)
+    status: Mapped[str] = mapped_column(String(30), index=True)
+    evidence_json: Mapped[dict[str, object]] = mapped_column(JSON)
+
+
+class ManualOverride(Base):
+    """A durable human decision applied after automated reconciliation."""
+
+    __tablename__ = "manual_override"
+    __table_args__ = (
+        UniqueConstraint("target_type", "target_key", "action", name="uq_manual_override_action"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    target_type: Mapped[str] = mapped_column(String(40), index=True)
+    target_key: Mapped[str] = mapped_column(Text)
+    action: Mapped[str] = mapped_column(String(20), index=True)
+    payload_json: Mapped[dict[str, object]] = mapped_column(JSON)
+    reason: Mapped[str] = mapped_column(Text)
+    reviewer: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    supersedes_id: Mapped[int | None] = mapped_column(ForeignKey("manual_override.id"))

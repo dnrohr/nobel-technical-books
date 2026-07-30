@@ -3,7 +3,7 @@
 A reproducible, provenance-rich bibliography of books written or edited by Nobel
 laureates in Physics, Chemistry, and Physiology or Medicine.
 
-This repository currently implements **Milestones 0–6** from [DESIGN.md](DESIGN.md):
+This repository currently implements **Milestones 0–7** from [DESIGN.md](DESIGN.md):
 the project scaffold, authoritative Nobel laureate ingestion, exact Wikidata
 identity resolution, Wikidata and Google Books discovery, and cautious Open
 Library enrichment.
@@ -30,6 +30,7 @@ uv run nobel-books discover --source openlibrary
 uv run nobel-books discover --source google-books --laureate-id 102
 uv run nobel-books normalize
 uv run nobel-books reconcile editions
+uv run nobel-books reconcile works
 ```
 
 Configuration is loaded from `config/default.yaml`, then an optional `.env` file,
@@ -107,3 +108,14 @@ values gain their ISBN-13 equivalent; invalid identifiers remain attached as
 issues. Exact ISBN, OCLC, or DOI matches auto-merge. Fuzzy evidence creates
 scored proposals, but conflicting valid identifiers always block fuzzy merging.
 Cluster membership and selected metadata are stable regardless of input order.
+
+## Milestone 7 behavior
+
+Canonical work clustering prioritizes explicit Open Library work IDs and Wikidata
+`edition of` links, then retains unlinked editions as stable work candidates.
+Translations remain separate edition rows with their own titles and languages.
+Series-level works and volume works coexist through typed `volume` relations.
+Potential merges and suspicious splits are exported to
+`data/exports/work_review_queue.csv`. Stable YAML merge/split decisions are
+stored as first-class database overrides and continue to apply when the YAML file
+is absent on later runs.
