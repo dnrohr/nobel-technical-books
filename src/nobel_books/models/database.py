@@ -150,3 +150,55 @@ class IdentityResolution(Base):
     candidate_qids: Mapped[list[str]] = mapped_column(JSON)
     source_fetch_id: Mapped[int] = mapped_column(ForeignKey("source_fetch.id"))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class SourceRecord(Base):
+    """A parsed, source-native entity that has not been canonicalized."""
+
+    __tablename__ = "source_record"
+    __table_args__ = (
+        UniqueConstraint(
+            "source_fetch_id",
+            "source",
+            "source_entity_type",
+            "source_entity_id",
+            name="uq_source_record_fetch_entity",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    source_fetch_id: Mapped[int] = mapped_column(ForeignKey("source_fetch.id"), index=True)
+    source: Mapped[str] = mapped_column(String(50), index=True)
+    source_entity_type: Mapped[str] = mapped_column(String(30), index=True)
+    source_entity_id: Mapped[str | None] = mapped_column(Text)
+    raw_json: Mapped[dict[str, object]] = mapped_column(JSON)
+    source_url: Mapped[str | None] = mapped_column(Text)
+
+
+class Assertion(Base):
+    """A field-level claim with direct source provenance."""
+
+    __tablename__ = "assertion"
+    __table_args__ = (
+        UniqueConstraint(
+            "source_record_id",
+            "subject_type",
+            "subject_id",
+            "predicate",
+            "value_hash",
+            name="uq_assertion_value",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    subject_type: Mapped[str] = mapped_column(String(30), index=True)
+    subject_id: Mapped[int] = mapped_column(Integer, index=True)
+    predicate: Mapped[str] = mapped_column(String(50), index=True)
+    value_json: Mapped[object] = mapped_column(JSON)
+    value_hash: Mapped[str] = mapped_column(String(64))
+    source_record_id: Mapped[int] = mapped_column(ForeignKey("source_record.id"), index=True)
+    reliability_class: Mapped[str] = mapped_column(String(5))
+    confidence: Mapped[float] = mapped_column(Float)
+    is_selected: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_contradicted: Mapped[bool] = mapped_column(Boolean, default=False)
+    notes: Mapped[str | None] = mapped_column(Text)

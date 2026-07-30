@@ -1,0 +1,29 @@
+{
+  "head": {"vars": ["person", "item", "itemLabel", "instance", "role"]},
+  "results": {
+    "bindings": [
+      {
+        "person": {"type": "uri", "value": "http://www.wikidata.org/entity/Q7186"},
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q100"},
+        "itemLabel": {"xml:lang": "en", "type": "literal", "value": "Treatise on Radioactivity"},
+        "instance": {"type": "uri", "value": "http://www.wikidata.org/entity/Q7725634"},
+        "instanceLabel": {"xml:lang": "en", "type": "literal", "value": "literary work"},
+        "role": {"type": "literal", "value": "author"},
+        "publicationDate": {"type": "literal", "value": "1910-01-01T00:00:00Z"}
+      },
+      {
+        "person": {"type": "uri", "value": "http://www.wikidata.org/entity/Q7186"},
+        "item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q101"},
+        "itemLabel": {"xml:lang": "en", "type": "literal", "value": "Radioactivity, Second Edition"},
+        "instance": {"type": "uri", "value": "http://www.wikidata.org/entity/Q3331189"},
+        "instanceLabel": {"xml:lang": "en", "type": "literal", "value": "edition"},
+        "role": {"type": "literal", "value": "editor"},
+        "publicationDate": {"type": "literal", "value": "1912-01-01T00:00:00Z"},
+        "isbn13": {"type": "literal", "value": "9780000000002"},
+        "oclc": {"type": "literal", "value": "12345"},
+        "editionOf": {"type": "uri", "value": "http://www.wikidata.org/entity/Q100"},
+        "editionOfLabel": {"xml:lang": "en", "type": "literal", "value": "Treatise on Radioactivity"}
+      }
+    ]
+  }
+}

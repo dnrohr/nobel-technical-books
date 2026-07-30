@@ -10,13 +10,14 @@ from sqlalchemy.orm import Session
 
 from nobel_books import __version__
 from nobel_books.adapters.nobel import NobelApiAdapter
-from nobel_books.adapters.wikidata import WikidataIdentityAdapter
+from nobel_books.adapters.wikidata import WikidataBookAdapter, WikidataIdentityAdapter
 from nobel_books.cache import RawResponseCache
 from nobel_books.config import get_settings
 from nobel_books.db import database_status, make_engine, upgrade_database
 from nobel_books.errors import NobelBooksError
 from nobel_books.logging import configure_logging
 from nobel_books.models.database import Laureate
+from nobel_books.pipeline.discovery import discover_wikidata_candidates
 from nobel_books.pipeline.identities import export_identity_review, resolve_identities
 from nobel_books.pipeline.laureates import sync_laureates
 
@@ -168,3 +169,37 @@ def identities_review_export(
     finally:
         engine.dispose()
     typer.echo(f"Exported {count} identity review row(s) to {output}.")
+
+
+@app.command("discover")
+def discover(
+    source_name: Annotated[
+        str, typer.Option("--source", help="Configured candidate source.")
+    ] = "wikidata",
+) -> None:
+    """Discover source-native book candidates without canonical merging."""
+
+    if source_name != "wikidata":
+        typer.echo(f"Error: source is not implemented: {source_name}", err=True)
+        raise typer.Exit(code=1)
+    settings = get_settings()
+    source = settings.sources.get("wikidata")
+    if source is None or not source.enabled or source.base_url is None:
+        typer.echo("Error: Wikidata source is not enabled and configured.", err=True)
+        raise typer.Exit(code=1)
+    adapter = WikidataBookAdapter(
+        source.base_url,
+        settings.project.user_agent,
+        batch_size=source.page_size,
+    )
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            summary = discover_wikidata_candidates(session, adapter, RawResponseCache())
+    finally:
+        engine.dispose()
+    typer.echo(
+        f"Discovered {summary.records} Wikidata candidate(s): "
+        f"works={summary.works}, editions={summary.editions}, "
+        f"assertions={summary.assertions}, batches={summary.batches}"
+    )

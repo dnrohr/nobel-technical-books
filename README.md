@@ -3,9 +3,9 @@
 A reproducible, provenance-rich bibliography of books written or edited by Nobel
 laureates in Physics, Chemistry, and Physiology or Medicine.
 
-This repository currently implements **Milestones 0–2** from [DESIGN.md](DESIGN.md):
-the project scaffold, authoritative Nobel laureate ingestion, and exact Wikidata
-identity resolution.
+This repository currently implements **Milestones 0–3** from [DESIGN.md](DESIGN.md):
+the project scaffold, authoritative Nobel laureate ingestion, exact Wikidata
+identity resolution, and Wikidata book discovery.
 
 ## Requirements
 
@@ -24,6 +24,7 @@ uv run nobel-books laureates sync
 uv run nobel-books laureates list
 uv run nobel-books identities resolve
 uv run nobel-books identities review-export
+uv run nobel-books discover --source wikidata
 ```
 
 Configuration is loaded from `config/default.yaml`, then an optional `.env` file,
@@ -62,3 +63,12 @@ multiple QIDs are retained as unresolved or ambiguous instead of being guessed.
 Verified records ingest Wikidata, ORCID, VIAF, ISNI, GND, LCNAF, and Open Library
 identifiers plus exact English name variants. `identities review-export` writes
 the unresolved/ambiguous queue as UTF-8 CSV.
+
+## Milestone 3 behavior
+
+`discover --source wikidata` queries verified QIDs for both author (`P50`) and
+editor (`P98`) relationships. Results remain source-native records: an
+`edition of` (`P629`) statement marks an edition, while unlinked candidates stay
+works. Roles, broad instance types, dates, ISBNs, OCLC numbers, titles, and
+work/edition links become individual assertions tied to the raw cached response.
+No canonical merge occurs during discovery.

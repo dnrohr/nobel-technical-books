@@ -72,6 +72,35 @@ WHERE {{
 """.strip()
 
 
+def candidate_query(person_qids: Sequence[str]) -> str:
+    values = " ".join(f"wd:{qid}" for qid in person_qids)
+    return f"""
+SELECT DISTINCT ?person ?item ?itemLabel ?instance ?instanceLabel ?role
+  ?publicationDate ?isbn13 ?isbn10 ?oclc ?editionOf ?editionOfLabel
+WHERE {{
+  VALUES ?person {{ {values} }}
+  {{
+    ?item wdt:P50 ?person .
+    BIND("author" AS ?role)
+  }}
+  UNION
+  {{
+    ?item wdt:P98 ?person .
+    BIND("editor" AS ?role)
+  }}
+  OPTIONAL {{ ?item wdt:P31 ?instance . }}
+  OPTIONAL {{ ?item wdt:P577 ?publicationDate . }}
+  OPTIONAL {{ ?item wdt:P212 ?isbn13 . }}
+  OPTIONAL {{ ?item wdt:P957 ?isbn10 . }}
+  OPTIONAL {{ ?item wdt:P243 ?oclc . }}
+  OPTIONAL {{ ?item wdt:P629 ?editionOf . }}
+  SERVICE wikibase:label {{
+    bd:serviceParam wikibase:language "en,[AUTO_LANGUAGE]".
+  }}
+}}
+""".strip()
+
+
 class WikidataIdentityAdapter:
     """Resolve Nobel IDs through exact Wikidata P8024 statements."""
 
@@ -120,6 +149,67 @@ class WikidataIdentityAdapter:
                 except (httpx.HTTPError, ValueError) as exc:
                     raise SourceUnavailableError(
                         f"Wikidata identity query failed for {len(batch)} Nobel IDs"
+                    ) from exc
+                yield FetchedBindings(
+                    url=str(response.request.url),
+                    status_code=response.status_code,
+                    content=response.content,
+                    bindings=parsed.results.bindings,
+                    nobel_ids=batch,
+                )
+        finally:
+            if owns_client:
+                client.close()
+
+
+class WikidataBookAdapter:
+    """Discover authored and edited source-native candidate records."""
+
+    name = "wikidata"
+
+    def __init__(
+        self,
+        endpoint: str,
+        user_agent: str,
+        *,
+        batch_size: int = 10,
+        client: httpx.Client | None = None,
+    ) -> None:
+        self.endpoint = endpoint
+        self.user_agent = user_agent
+        self.batch_size = batch_size
+        self._client = client
+
+    @retry(
+        retry=retry_if_exception_type(httpx.HTTPError),
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=1, max=4),
+        reraise=True,
+    )
+    def _request(self, client: httpx.Client, batch: list[str]) -> httpx.Response:
+        response = client.get(
+            self.endpoint,
+            params={"query": candidate_query(batch), "format": "json"},
+            headers={
+                "Accept": "application/sparql-results+json",
+                "User-Agent": self.user_agent,
+            },
+        )
+        response.raise_for_status()
+        return response
+
+    def batches(self, qids: Sequence[str]) -> Iterator[FetchedBindings]:
+        owns_client = self._client is None
+        client = self._client or httpx.Client(timeout=120.0, follow_redirects=True)
+        try:
+            for batch in _chunks(qids, self.batch_size):
+                try:
+                    response = self._request(client, batch)
+                    payload: Any = response.json()
+                    parsed = SparqlResponse.model_validate(payload)
+                except (httpx.HTTPError, ValueError) as exc:
+                    raise SourceUnavailableError(
+                        f"Wikidata candidate query failed for {len(batch)} people"
                     ) from exc
                 yield FetchedBindings(
                     url=str(response.request.url),
