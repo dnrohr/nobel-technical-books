@@ -1,0 +1,54 @@
+{
+  "changes_from_prior_run": {
+    "unique_laureates": 0,
+    "unreviewed_candidates": 0,
+    "verified_works": 0
+  },
+  "classification_distribution": {
+    "essays": 2,
+    "memoir": 4,
+    "reference": 11,
+    "technical_monograph": 39,
+    "textbook": 14,
+    "unknown": 805
+  },
+  "duplicate_edition_clusters": 2,
+  "failed_pipeline_runs": 2,
+  "generated_at": "2026-07-30T13:42:03.613798+00:00",
+  "identity_resolution": {
+    "verified": 658
+  },
+  "laureate_work_distribution": {
+    "multiple": 128,
+    "one": 100,
+    "zero": 430
+  },
+  "laureates_by_category": {
+    "chemistry": 198,
+    "medicine": 232,
+    "physics": 229
+  },
+  "review_progress": {
+    "needs_review": 899,
+    "rejected": 9
+  },
+  "source_contribution_counts": {
+    "openalex": 1,
+    "openlibrary": 30,
+    "wikidata": 963,
+    "wikipedia": 9
+  },
+  "technical_works_by_category_decade": {
+    "chemistry:unknown": 17,
+    "medicine:unknown": 19,
+    "physics:1870s": 1,
+    "physics:1930s": 2,
+    "physics:1940s": 1,
+    "physics:1950s": 2,
+    "physics:1960s": 2,
+    "physics:unknown": 21
+  },
+  "unique_laureates": 658,
+  "unreviewed_candidates": 899,
+  "verified_works": 0
+}

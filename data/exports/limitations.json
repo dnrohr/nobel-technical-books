@@ -1,0 +1,30 @@
+{
+  "redistribution": "Restricted or proprietary source metadata must not be redistributed outside its permitted use.",
+  "release_status": "Machine-generated research dataset; ambiguous and unreviewed records require human audit.",
+  "source_limitations": {
+    "crossref": {
+      "book_types": [
+        "book",
+        "book-set",
+        "edited-book",
+        "monograph",
+        "reference-book"
+      ],
+      "coverage": "DOI-registered books and monographs",
+      "limitations": [
+        "most older books lack DOIs",
+        "used for enrichment and corroboration, not complete discovery"
+      ]
+    },
+    "openalex": {
+      "coverage": "technical and scholarly books linked to resolved authors",
+      "include_xpac": false,
+      "limitations": [
+        "does not cover most memoirs or popular books",
+        "older non-digitized monographs may be absent",
+        "book coverage is not comprehensive"
+      ],
+      "xpac_quality_warning": null
+    }
+  }
+}
