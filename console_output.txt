@@ -1,0 +1,1008 @@
+➜ uv sync
+uv run nobel-books --help
+uv run nobel-books init
+uv run nobel-books db upgrade
+uv run nobel-books status
+uv run nobel-books laureates sync
+uv run nobel-books laureates list
+uv run nobel-books identities resolve
+uv run nobel-books identities review-export
+uv run nobel-books discover --source wikidata
+uv run nobel-books discover --source openlibrary
+uv run nobel-books discover --source google-books --laureate-id 102
+uv run nobel-books normalize
+uv run nobel-books reconcile editions
+uv run nobel-books reconcile works
+uv run nobel-books discover --source openalex --laureate-id 102
+uv run nobel-books discover --source crossref
+uv run nobel-books discover --source wikipedia --laureate-id 102
+uv run nobel-books classify
+uv run nobel-books score
+uv run nobel-books review export
+uv run nobel-books review import data/exports/review_queue.csv
+uv run nobel-books export all
+uv run nobel-books audit run
+uv run nobel-books review serveprevious data/exports/accepted-audit.json
+Using CPython 3.12.3 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 49 packages in 0.62ms
+      Built nobel-laureate-books @ file:///home/david/bin/nobel-technical-books Prepared 48 packages in 1.18s
+Installed 48 packages in 11ms
+ + alembic==1.18.5
+ + annotated-doc==0.0.5
+ + annotated-types==0.8.0
+ + anyio==4.14.2
+ + ast-serialize==0.6.0
+ + certifi==2026.7.22
+ + click==8.4.2
+ + coverage==7.15.2
+ + fastapi==0.141.1
+ + greenlet==3.5.4
+ + h11==0.16.0
+ + httpcore==1.0.9
+ + httpx==0.28.1
+ + idna==3.18
+ + iniconfig==2.3.0
+ + librt==0.13.0
+ + mako==1.3.12
+ + markdown-it-py==4.2.0
+ + markupsafe==3.0.3
+ + mdurl==0.1.2
+ + mypy==2.3.0
+ + mypy-extensions==1.1.0
+ + nobel-laureate-books==0.1.0 (from file:///home/david/bin/nobel-technical-books)
+ + packaging==26.2
+ + pathspec==1.1.1
+ + pluggy==1.6.0
+ + pydantic==2.13.4
+ + pydantic-core==2.46.4
+ + pydantic-settings==2.14.2
+ + pygments==2.20.0
+ + pytest==9.1.1
+ + pytest-cov==7.1.0
+ + python-dotenv==1.2.2
+ + pyyaml==6.0.3
+ + rapidfuzz==3.14.5
+ + respx==0.23.1
+ + rich==15.0.0
+ + ruff==0.16.0
+ + shellingham==1.5.4
+ + sqlalchemy==2.0.51
+ + starlette==1.3.1
+ + structlog==26.1.0
+ + tenacity==9.1.4
+ + typer==0.27.0
+ + types-pyyaml==6.0.12.20260724
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.2
+ + uvicorn==0.52.0
+                                                                                
+ Usage: nobel-books [OPTIONS] COMMAND [ARGS]...                                 
+                                                                                
+ Build a provenance-rich bibliography of Nobel laureate books.                  
+                                                                                
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --version                     Show version.                                  │
+│ --install-completion          Install completion for the current shell.      │
+│ --show-completion             Show completion for the current shell, to copy │
+│                               it or customize the installation.              │
+│ --help                        Show this message and exit.                    │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─ Commands ───────────────────────────────────────────────────────────────────╮
+│ init        Create local data directories and show the next setup command.   │
+│ status      Show configuration and database readiness.                       │
+│ discover    Discover source-native book candidates without canonical         │
+│             merging.                                                         │
+│ normalize   Normalize and deterministically reconcile edition source         │
+│             records.                                                         │
+│ classify    Apply deterministic taxonomy and confidence rules.               │
+│ score       Recompute laureate-work relationship confidence.                 │
+│ db          Manage the bibliography database.                                │
+│ laureates   Import and inspect Nobel laureates.                              │
+│ identities  Resolve and review external person identities.                   │
+│ reconcile   Reconcile normalized source records.                             │
+│ review      Export and import durable review decisions.                      │
+│ export      Export bibliography artifacts.                                   │
+│ audit       Audit coverage, regressions, and dataset drift.                  │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+Project directories initialized. Run `nobel-books db upgrade` next.
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Create initial pipeline and source fetch tables.
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, Create laureate and prize award tables.
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, Create authority identity and name variant tables.
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, Create source record and field assertion tables.
+INFO  [alembic.runtime.migration] Running upgrade 0004 -> 0005, Create source author candidate table.
+INFO  [alembic.runtime.migration] Running upgrade 0005 -> 0006, Create controlled discovery query log.
+INFO  [alembic.runtime.migration] Running upgrade 0006 -> 0007, Create normalized edition reconciliation tables.
+INFO  [alembic.runtime.migration] Running upgrade 0007 -> 0008, Create canonical work, hierarchy, review, and manual override tables.
+INFO  [alembic.runtime.migration] Running upgrade 0008 -> 0009, Create scored laureate contribution table.
+Database upgraded to head.
+Version: 0.1.0
+Database: sqlite:///data/nobel_books.sqlite3
+Schema migrated: yes
+Tables: alembic_version, assertion, canonical_work, contribution, discovery_query, edition, edition_merge_proposal, edition_source_record, external_identity, identity_resolution, laureate, manual_override, person_name_variant, pipeline_run, prize_award, source_author_candidate, source_fetch, source_record, work_merge_proposal, work_relation, work_source_record
+Enabled sources: nobel, wikidata, openlibrary, google_books, openalex, crossref, wikipedia
+HTTP Request: GET https://api.nobelprize.org/2.1/laureates?offset=0&limit=100 "HTTP/1.1 200 OK"
+HTTP Request: GET https://api.nobelprize.org/2.1/laureates?offset=100&limit=100 "HTTP/1.1 200 OK"
+HTTP Request: GET https://api.nobelprize.org/2.1/laureates?offset=200&limit=100 "HTTP/1.1 200 OK"
+HTTP Request: GET https://api.nobelprize.org/2.1/laureates?offset=300&limit=100 "HTTP/1.1 200 OK"
+HTTP Request: GET https://api.nobelprize.org/2.1/laureates?offset=400&limit=100 "HTTP/1.1 200 OK"
+HTTP Request: GET https://api.nobelprize.org/2.1/laureates?offset=500&limit=100 "HTTP/1.1 200 OK"
+HTTP Request: GET https://api.nobelprize.org/2.1/laureates?offset=600&limit=100 "HTTP/1.1 200 OK"
+HTTP Request: GET https://api.nobelprize.org/2.1/laureates?offset=700&limit=100 "HTTP/1.1 200 OK"
+HTTP Request: GET https://api.nobelprize.org/2.1/laureates?offset=800&limit=100 "HTTP/1.1 200 OK"
+HTTP Request: GET https://api.nobelprize.org/2.1/laureates?offset=900&limit=100 "HTTP/1.1 200 OK"
+HTTP Request: GET https://api.nobelprize.org/2.1/laureates?offset=1000&limit=100 "HTTP/1.1 200 OK"
+Imported 658 laureates from 11 page(s).
+Skipped 28 organization(s).
+chemistry: 200
+medicine: 232
+physics: 230
+Awards by year: 1901=3, 1902=4, 1903=5, 1904=3, 1905=3, 1906=4, 1907=3, 1908=4, 1909=4, 1910=3, 1911=3, 1912=4, 1913=3, 1914=3, 1915=3, 1917=1, 1918=2, 1919=2, 1920=3, 1921=2, 1922=4, 1923=4, 1924=2, 1925=3, 1926=3, 1927=4, 1928=3, 1929=5, 1930=3, 1931=3, 1932=4, 1933=3, 1934=4, 1935=4, 1936=5, 1937=5, 1938=3, 1939=4, 1943=4, 1944=4, 1945=5, 1946=5, 1947=5, 1948=3, 1949=4, 1950=6, 1951=5, 1952=5, 1953=4, 1954=6, 1955=4, 1956=8, 1957=4, 1958=7, 1959=5, 1960=4, 1961=4, 1962=6, 1963=8, 1964=6, 1965=7, 1966=4, 1967=7, 1968=5, 1969=6, 1970=6, 1971=3, 1972=8, 1973=8, 1974=6, 1975=8, 1976=5, 1977=7, 1978=7, 1979=7, 1980=8, 1981=8, 1982=5, 1983=4, 1984=6, 1985=5, 1986=8, 1987=6, 1988=9, 1989=7, 1990=6, 1991=4, 1992=4, 1993=6, 1994=5, 1995=8, 1996=8, 1997=7, 1998=8, 1999=4, 2000=9, 2001=9, 2002=9, 2003=7, 2004=8, 2005=8, 2006=5, 2007=6, 2008=9, 2009=9, 2010=6, 2011=7, 2012=6, 2013=8, 2014=9, 2015=8, 2016=7, 2017=9, 2018=8, 2019=9, 2020=8, 2021=7, 2022=7, 2023=8, 2024=7, 2025=9
+102	Aage N. Bohr
+779	Aaron Ciechanover
+259	Aaron Klug
+114	Abdus Salam
+843	Ada E. Yonath
+866	Adam G. Riess
+199	Adolf Butenandt
+185	Adolf Windaus
+164	Adolf von Baeyer
+292	Ahmed Zewail
+853	Akira Suzuki
+978	Akira Yoshino
+1012	Alain Aspect
+729	Alan Heeger
+376	Alan Hodgkin
+730	Alan MacDiarmid
+11	Albert A. Michelson
+403	Albert Claude
+26	Albert Einstein
+814	Albert Fert
+332	Albert Szent-Györgyi
+304	Albrecht Kossel
+83	Aleksandr M. Prokhorov
+1031	Aleksey Yekimov 
+766	Alexei Abrikosov
+306	Alexis Carrel
+392	Alfred D. Hershey
+450	Alfred G. Gilman
+87	Alfred Kastler
+174	Alfred Werner
+417	Allan M. Cormack
+305	Allvar Gullstrand
+300	Alphonse Laveran
+849	Andre Geim
+990	Andrea Ghez
+377	Andrew Huxley
+412	Andrew V. Schally
+802	Andrew Z. Fire
+360	André F. Cournand
+381	André Lwoff
+1028	Anne L’Huillier
+768	Anthony J. Leggett
+1014	Anton Zeilinger
+101	Antony Hewish
+214	Archer J.P. Martin
+311	Archibald V. Hill
+998	Ardem Patapoutian
+891	Arieh Warshel
+208	Arne Tiselius
+111	Arno Penzias
+960	Arthur Ashkin
+920	Arthur B. McDonald
+33	Arthur H. Compton
+186	Arthur Harden
+368	Arthur Kornberg
+119	Arthur L. Schawlow
+203	Artturi Virtanen
+722	Arvid Carlsson
+310	August Krogh
+780	Avram Hershko
+923	Aziz Sancar
+428	Barbara McClintock
+942	Barry C. Barish
+789	Barry J. Marshall
+409	Baruch S. Blumberg
+419	Baruj Benacerraf
+103	Ben R. Mottelson
+426	Bengt I. Samuelsson
+1002	Benjamin List
+933	Bernard L. Feringa
+345	Bernardo Houssay
+445	Bert Sakmann
+145	Bertram N. Brockhouse
+99	Brian D. Josephson
+879	Brian Kobilka
+865	Brian P. Schmidt
+861	Bruce A. Beutler
+261	Bruce Merrifield
+105	Burton Richter
+34	C.T.R. Wilson
+298	Camillo Golgi
+189	Carl Bosch
+343	Carl Cori
+43	Carl D. Anderson
+740	Carl Wieman
+124	Carlo Rubbia
+836	Carol W. Greider
+1015	Carolyn Bertozzi
+55	Cecil Powell
+384	Charles B. Huggins
+25	Charles Edouard Guillaume
+22	Charles Glover Barkla
+81	Charles H. Townes
+269	Charles J. Pedersen
+838	Charles K. Kao
+987	Charles M. Rice
+318	Charles Nicolle
+307	Charles Richet
+68	Chen Ning Yang
+319	Christiaan Eijkman
+241	Christian Anfinsen
+404	Christian de Duve
+453	Christiane Nüsslein-Volhard
+153	Claude Cohen-Tannoudji
+146	Clifford G. Shull
+44	Clinton Davisson
+333	Corneille Heymans
+803	Craig C. Mello
+431	César Milstein
+410	D. Carleton Gajdusek
+867	Dan Shechtman
+363	Daniel Bovet
+157	Daniel C. Tsui
+415	Daniel Nathans
+1039	David Baker
+406	David Baltimore
+423	David H. Hubel
+776	David J. Gross
+928	David J. Thouless
+877	David J. Wineland
+997	David Julius
+149	David M. Lee
+1003	David W.C. MacMillan
+1040	Demis Hassabis
+93	Dennis Gabor
+237	Derek Barton
+362	Dickinson W. Richards
+975	Didier Queloz
+74	Donald A. Glaser
+267	Donald J. Cram
+962	Donna Strickland
+230	Dorothy Crowfoot Hodgkin
+150	Douglas D. Osheroff
+1025	Drew Weissman
+264	Dudley R. Herschbach
+443	E. Donnall Thomas
+59	E. M. Purcell
+397	Earl W. Sutherland, Jr.
+324	Edgar Adrian
+446	Edmond H. Fischer
+166	Eduard Buchner
+905	Edvard I. Moser
+336	Edward A. Doisy
+452	Edward B. Lewis
+349	Edward C. Kendall
+365	Edward Tatum
+52	Edward V. Appleton
+447	Edwin G. Krebs
+212	Edwin M. McMillan
+348	Egas Moniz
+852	Ei-ichi Negishi
+275	Elias James Corey
+835	Elizabeth H. Blackburn
+161	Emil Fischer
+293	Emil von Behring
+72	Emilio Segrè
+991	Emmanuelle Charpentier
+46	Enrico Fermi
+909	Eric Betzig
+738	Eric Cornell
+454	Eric F. Wieschaus
+724	Eric Kandel
+47	Ernest Lawrence
+167	Ernest Rutherford
+57	Ernest T.S. Walton
+340	Ernst B. Chain
+244	Ernst Otto Fischer
+127	Ernst Ruska
+444	Erwin Neher
+39	Erwin Schrödinger
+78	Eugene Wigner
+929	F. Duncan M. Haldane
+283	F. Sherwood Rowland
+58	Felix Bloch
+379	Feodor Lynen
+14	Ferdinand Braun
+1027	Ferenc Krausz
+460	Ferid Murad
+963	Frances H. Arnold
+372	Francis Crick
+180	Francis W. Aston
+778	Frank Wilczek
+887	François Englert
+380	François Jacob
+824	Françoise Barré-Sinoussi
+1048	Fred Ramsdell
+358	Frederick C. Robbins
+313	Frederick G. Banting
+148	Frederick Reines
+222	Frederick Sanger
+179	Frederick Soddy
+190	Friedrich Bergius
+60	Frits Zernike
+177	Fritz Haber
+355	Fritz Lipmann
+181	Fritz Pregl
+193	Frédéric Joliot
+12	Gabriel Lippmann
+1036	Gary Ruvkun
+1038	Geoffrey Hinton
+245	Geoffrey Wilkinson
+253	Georg Wittig
+371	Georg von Békésy
+280	George A. Olah
+364	George Beadle
+421	George D. Snell
+405	George E. Palade
+840	George E. Smith
+805	George F. Smoot
+439	George H. Hitchings
+326	George H. Whipple
+964	George P. Smith
+45	George Paget Thomson
+235	George Porter
+327	George R. Minot
+387	George Wald
+201	George de Hevesy
+142	Georges Charpak
+430	Georges J.F. Köhler
+398	Gerald M. Edelman
+158	Gerardus 't Hooft
+128	Gerd Binnig
+334	Gerhard Domagk
+816	Gerhard Ertl
+240	Gerhard Herzberg
+438	Gertrude B. Elion
+344	Gerty Cori
+1001	Giorgio Parisi
+229	Giulio Natta
+213	Glenn T. Seaborg
+418	Godfrey N. Hounsfield
+972	Gregg L. Semenza
+13	Guglielmo Marconi
+17	Gustaf Dalén
+31	Gustav Hertz
+961	Gérard Mourou
+461	Günter Blobel
+777	H. David Politzer
+389	H. Gobind Khorana
+751	H. Robert Horvitz
+416	Hamilton O. Smith
+91	Hannes Alfvén
+88	Hans Bethe
+188	Hans Fischer
+136	Hans G. Dehmelt
+354	Hans Krebs
+329	Hans Spemann
+187	Hans von Euler-Chelpin
+823	Harald zur Hausen
+192	Harold C. Urey
+441	Harold E. Varmus
+272	Hartmut Michel
+985	Harvey J. Alter
+18	Heike Kamerlingh Onnes
+129	Heinrich Rohrer
+184	Heinrich Wieland
+2	Hendrik A. Lorentz
+4	Henri Becquerel
+165	Henri Moissan
+335	Henrik Dam
+260	Henry Taube
+139	Henry W. Kendall
+262	Herbert A. Hauptman
+252	Herbert C. Brown
+727	Herbert Kroemer
+338	Herbert S. Gasser
+342	Hermann J. Muller
+216	Hermann Staudinger
+731	Hideki Shirakawa
+54	Hideki Yukawa
+907	Hiroshi Amano
+156	Horst L. Störmer
+408	Howard M. Temin
+359	Hugo Theorell
+71	Igor Y. Tamm
+301	Ilya Mechnikov
+250	Ilya Prigogine
+721	Il´ja M. Frank
+191	Irving Langmuir
+781	Irwin Rose
+194	Irène Joliot-Curie
+906	Isamu Akasaki
+49	Isidor Isaac Rabi
+296	Ivan Pavlov
+98	Ivar Giaever
+130	J. Georg Bednorz
+80	J. Hans D. Jensen
+440	J. Michael Bishop
+930	J. Michael Kosterlitz
+790	J. Robin Warren
+10	J.J. Thomson
+728	Jack Kilby
+134	Jack Steinberger
+837	Jack W. Szostak
+160	Jacobus H. van 't Hoff
+944	Jacques Dubochet
+382	Jacques Monod
+204	James B. Sumner
+41	James Chadwick
+116	James Cronin
+884	James E. Rothman
+30	James Franck
+958	James P. Allison
+973	James Peebles
+104	James Rainwater
+373	James Watson
+223	Jaroslav Heyrovsky
+32	Jean Baptiste Perrin
+420	Jean Dausset
+268	Jean-Marie Lehn
+931	Jean-Pierre Sauvage
+938	Jeffrey C. Hall
+992	Jennifer A. Doudna
+289	Jens C. Skou
+138	Jerome I. Friedman
+263	Jerome Karle
+945	Joachim Frank
+270	Johann Deisenhofer
+15	Johannes Diderik van der Waals
+316	Johannes Fibiger
+24	Johannes Stark
+756	John B. Fenn
+976	John B. Goodenough
+66	John Bardeen
+227	John C. Kendrew
+804	John C. Mather
+266	John C. Polanyi
+1050	John Clarke
+1013	John Clauser
+56	John Cockcroft
+247	John Cornforth
+752	John E. Sulston
+288	John E. Walker
+356	John F. Enders
+205	John H. Northrop
+109	John H. Van Vleck
+1037	John J. Hopfield
+1041	John Jumper
+792	John L. Hall
+1052	John M. Martinis
+314	John Macleod
+903	John O'Keefe
+291	John Pople
+427	John R. Vane
+442	Joseph E. Murray
+337	Joseph Erlanger
+144	Joseph H. Taylor Jr.
+433	Joseph L. Goldstein
+366	Joshua Lederberg
+862	Jules A. Hoffmann
+309	Jules Bordet
+85	Julian Schwinger
+396	Julius Axelrod
+317	Julius Wagner-Jauregg
+131	K. Alex Müller
+743	K. Barry Sharpless
+120	Kai M. Siegbahn
+321	Karl Landsteiner
+228	Karl Ziegler
+400	Karl von Frisch
+278	Kary B. Mullis
+1024	Katalin Karikó
+386	Keffer Hartline
+257	Kenichi Fukui
+121	Kenneth G. Wilson
+943	Kip S. Thorne
+1000	Klaus Hasselmann
+126	Klaus von Klitzing
+757	Koichi Tanaka
+378	Konrad Bloch
+401	Konrad Lorenz
+850	Konstantin Novoselov
+211	Kurt Alder
+758	Kurt Wüthrich
+236	Lars Onsager
+21	Lawrence Bragg
+735	Leland Hartwell
+97	Leo Esaki
+132	Leon M. Lederman
+95	Leon N. Cooper
+200	Leopold Ruzicka
+77	Lev Landau
+775	Linda B. Buck
+217	Linus Pauling
+8	Lord Rayleigh
+221	Lord Todd
+1030	Louis Brus
+459	Louis J. Ignarro
+92	Louis Néel
+36	Louis de Broglie
+825	Luc Montagnier
+89	Luis Alvarez
+239	Luis Leloir
+977	M. Stanley Whittingham
+827	Makoto Kobayashi
+233	Manfred Eigen
+29	Manne Siegbahn
+79	Maria Goeppert Mayer
+6	Marie Curie
+282	Mario J. Molina
+811	Mario R. Capecchi
+390	Marshall W. Nirenberg
+830	Martin Chalfie
+889	Martin Karplus
+147	Martin L. Perl
+451	Martin Rodbell
+100	Martin Ryle
+159	Martinus J.G. Veltman
+1047	Mary E. Brunkow
+754	Masatoshi Koshiba
+374	Maurice Wilkins
+61	Max Born
+391	Max Delbrück
+226	Max F. Perutz
+23	Max Planck
+352	Max Theiler
+19	Max von Laue
+904	May-Britt Moser
+225	Melvin Calvin
+133	Melvin Schwartz
+986	Michael Houghton
+890	Michael Levitt
+939	Michael Rosbash
+432	Michael S. Brown
+279	Michael Smith
+940	Michael W. Young
+1051	Michel H. Devoret
+974	Michel Mayor
+1016	Morten Meldal
+1029	Moungi Bawendi
+90	Murray Gell-Mann
+118	Nicolaas Bloembergen
+82	Nicolay G. Basov
+27	Niels Bohr
+429	Niels K. Jerne
+295	Niels Ryberg Finsen
+402	Nikolaas Tinbergen
+220	Nikolay Semenov
+135	Norman F. Ramsey
+196	Norman Haworth
+238	Odd Hassel
+813	Oliver Smithies
+1055	Omar M. Yaghi
+829	Osamu Shimomura
+210	Otto Diels
+202	Otto Hahn
+331	Otto Loewi
+312	Otto Meyerhof
+48	Otto Stern
+169	Otto Wallach
+322	Otto Warburg
+73	Owen Chamberlain
+35	Owen Willans Richardson
+53	Patrick M.S. Blackett
+40	Paul A.M. Dirac
+254	Paul Berg
+764	Paul C. Lauterbur
+287	Paul D. Boyer
+302	Paul Ehrlich
+723	Paul Greengard
+281	Paul J. Crutzen
+246	Paul J. Flory
+197	Paul Karrer
+922	Paul Modrich
+346	Paul Müller
+173	Paul Sabatier
+70	Pavel A. Cherenkov
+51	Percy W. Bridgman
+769	Peter Agre
+455	Peter C. Doherty
+195	Peter Debye
+815	Peter Grünberg
+888	Peter Higgs
+370	Peter Medawar
+251	Peter Mitchell
+383	Peyton Rous
+351	Philip S. Hench
+107	Philip W. Anderson
+9	Philipp Lenard
+449	Phillip A. Sharp
+1026	Pierre Agostini
+5	Pierre Curie
+141	Pierre-Gilles de Gennes
+3	Pieter Zeeman
+64	Polykarp Kusch
+110	Pyotr Kapitsa
+385	Ragnar Granit
+941	Rainer Weiss
+863	Ralph M. Steinman
+885	Randy W. Schekman
+753	Raymond Davis Jr.
+989	Reinhard Genzel
+407	Renato Dulbecco
+755	Riccardo Giacconi
+774	Richard Axel
+286	Richard E. Smalley
+140	Richard E. Taylor
+851	Richard F. Heck
+946	Richard Henderson
+448	Richard J. Roberts
+198	Richard Kuhn
+215	Richard L.M. Synge
+86	Richard P. Feynman
+276	Richard R. Ernst
+796	Richard R. Schrock
+1054	Richard Robson
+176	Richard Willstätter
+182	Richard Zsigmondy
+435	Rita Levi-Montalcini
+258	Roald Hoffmann
+28	Robert A. Millikan
+155	Robert B. Laughlin
+231	Robert B. Woodward
+308	Robert Bárány
+151	Robert C. Richardson
+284	Robert F. Curl Jr.
+458	Robert F. Furchgott
+848	Robert G. Edwards
+795	Robert H. Grubbs
+75	Robert Hofstadter
+271	Robert Huber
+878	Robert J. Lefkowitz
+297	Robert Koch
+232	Robert S. Mulliken
+96	Robert Schrieffer
+388	Robert W. Holley
+112	Robert Woodrow Wilson
+770	Roderick MacKinnon
+399	Rodney R. Porter
+806	Roger D. Kornberg
+411	Roger Guillemin
+988	Roger Penrose
+422	Roger W. Sperry
+831	Roger Y. Tsien
+456	Rolf M. Zinkernagel
+234	Ronald G.W. Norrish
+294	Ronald Ross
+413	Rosalyn Yalow
+791	Roy J. Glauber
+76	Rudolf Mössbauer
+277	Rudolph A. Marcus
+143	Russell A. Hulse
+742	Ryoji Noyori
+393	Salvador E. Luria
+106	Samuel C.C. Ting
+299	Santiago Ramón y Cajal
+917	Satoshi Ōmura
+864	Saul Perlmutter
+353	Selman A. Waksman
+876	Serge Haroche
+367	Severo Ochoa
+113	Sheldon Glashow
+1049	Shimon Sakaguchi
+875	Shinya Yamanaka
+908	Shuji Nakamura
+273	Sidney Altman
+125	Simon van der Meer
+84	Sin-Itiro Tomonaga
+339	Sir Alexander Fleming
+394	Sir Bernard Katz
+37	Sir Chandrasekhara Venkata Raman
+323	Sir Charles Sherrington
+219	Sir Cyril Hinshelwood
+369	Sir Frank Macfarlane Burnet
+320	Sir Frederick Hopkins
+965	Sir Gregory P. Winter
+285	Sir Harold Kroto
+330	Sir Henry Dale
+341	Sir Howard Florey
+932	Sir J. Fraser Stoddart
+437	Sir James W. Black
+874	Sir John B. Gurdon
+375	Sir John Eccles
+812	Sir Martin J. Evans
+108	Sir Nevill F. Mott
+737	Sir Paul Nurse
+971	Sir Peter J. Ratcliffe
+765	Sir Peter Mansfield
+207	Sir Robert Robinson
+163	Sir William Ramsay
+242	Stanford Moore
+457	Stanley B. Prusiner
+434	Stanley Cohen
+910	Stefan W. Hell
+152	Steven Chu
+115	Steven Weinberg
+122	Subrahmanyan Chandrasekhar
+425	Sune K. Bergström
+1053	Susumu Kitagawa
+436	Susumu Tonegawa
+162	Svante Arrhenius
+1011	Svante Pääbo
+750	Sydney Brenner
+999	Syukuro Manabe
+350	Tadeus Reichstein
+919	Takaaki Kajita
+959	Tasuku Honjo
+183	The Svedberg
+303	Theodor Kocher
+793	Theodor W. Hänsch
+175	Theodore W. Richards
+842	Thomas A. Steitz
+886	Thomas C. Südhof
+325	Thomas H. Morgan
+357	Thomas H. Weller
+274	Thomas R. Cech
+736	Tim Hunt
+921	Tomas Lindahl
+424	Torsten N. Wiesel
+828	Toshihide Maskawa
+69	Tsung-Dao Lee
+918	Tu Youyou
+395	Ulf von Euler
+117	Val Fitch
+841	Venkatraman Ramakrishnan
+1035	Victor Ambros
+42	Victor F. Hess
+172	Victor Grignard
+218	Vincent du Vigneaud
+767	Vitaly L. Ginzburg
+248	Vladimir Prelog
+255	Walter Gilbert
+67	Walter H. Brattain
+347	Walter Hess
+290	Walter Kohn
+62	Walther Bothe
+178	Walther Nernst
+206	Wendell M. Stanley
+414	Werner Arber
+361	Werner Forssmann
+38	Werner Heisenberg
+1	Wilhelm Conrad Röntgen
+168	Wilhelm Ostwald
+16	Wilhelm Wien
+224	Willard F. Libby
+839	Willard S. Boyle
+315	Willem Einthoven
+123	William A. Fowler
+65	William B. Shockley
+20	William Bragg
+916	William C. Campbell
+154	William D. Phillips
+911	William E. Moerner
+209	William F. Giauque
+970	William G. Kaelin Jr
+243	William H. Stein
+741	William Knowles
+249	William Lipscomb
+328	William P. Murphy
+63	Willis E. Lamb
+739	Wolfgang Ketterle
+137	Wolfgang Paul
+50	Wolfgang Pauli
+826	Yoichiro Nambu
+927	Yoshinori Ohsumi
+265	Yuan T. Lee
+794	Yves Chauvin
+726	Zhores Alferov
+Resolved identities: verified=658, unresolved=0, ambiguous=0, batches=66
+Exported 0 identity review row(s) to data/exports/identity_review.csv.
+Discovered 963 Wikidata candidate(s): works=884, editions=79, assertions=6253, batches=66
+Error: project.contact_email is required for Open Library.
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /home/david/bin/nobel-technical-books/src/nobel_books/adapters/google_books. │
+│ py:123 in volumes                                                            │
+│                                                                              │
+│   120 │   │   try:                                                           │
+│   121 │   │   │   while start_index < self.max_results_per_query:            │
+│   122 │   │   │   │   try:                                                   │
+│ ❱ 123 │   │   │   │   │   response = self._request(client, query,            │
+│       start_index)                                                           │
+│   124 │   │   │   │   │   payload: Any = response.json()                     │
+│   125 │   │   │   │   │   parsed =                                           │
+│       GoogleBooksResponse.model_validate(payload)                            │
+│   126 │   │   │   │   except (httpx.HTTPError, ValueError) as exc:           │
+│                                                                              │
+│ /home/david/bin/nobel-technical-books/.venv/lib/python3.12/site-packages/ten │
+│ acity/__init__.py:331 in wrapped_f                                           │
+│                                                                              │
+│   328 │   │   │   # calling the same wrapped functions multiple times in the │
+│       same stack                                                             │
+│   329 │   │   │   copy = self.copy()                                         │
+│   330 │   │   │   wrapped_f.statistics = copy.statistics  # type:            │
+│       ignore[attr-defined]                                                   │
+│ ❱ 331 │   │   │   return copy(f, *args, **kw)                                │
+│   332 │   │                                                                  │
+│   333 │   │   def retry_with(*args: t.Any, **kwargs: t.Any) -> WrappedFn:    │
+│   334 │   │   │   return self.copy(*args, **kwargs).wraps(f)                 │
+│                                                                              │
+│ /home/david/bin/nobel-technical-books/.venv/lib/python3.12/site-packages/ten │
+│ acity/__init__.py:470 in __call__                                            │
+│                                                                              │
+│   467 │   │                                                                  │
+│   468 │   │   retry_state = RetryCallState(retry_object=self, fn=fn,         │
+│       args=args, kwargs=kwargs)                                              │
+│   469 │   │   while True:                                                    │
+│ ❱ 470 │   │   │   do = self.iter(retry_state=retry_state)                    │
+│   471 │   │   │   if isinstance(do, DoAttempt):                              │
+│   472 │   │   │   │   try:                                                   │
+│   473 │   │   │   │   │   result = fn(*args, **kwargs)                       │
+│                                                                              │
+│ /home/david/bin/nobel-technical-books/.venv/lib/python3.12/site-packages/ten │
+│ acity/__init__.py:371 in iter                                                │
+│                                                                              │
+│   368 │   │   self._begin_iter(retry_state)                                  │
+│   369 │   │   result = None                                                  │
+│   370 │   │   for action in self.iter_state.actions:                         │
+│ ❱ 371 │   │   │   result = action(retry_state)                               │
+│   372 │   │   return result                                                  │
+│   373 │                                                                      │
+│   374 │   def _begin_iter(self, retry_state: "RetryCallState") -> None:  #   │
+│       noqa                                                                   │
+│                                                                              │
+│ /home/david/bin/nobel-technical-books/.venv/lib/python3.12/site-packages/ten │
+│ acity/__init__.py:413 in exc_check                                           │
+│                                                                              │
+│   410 │   │   │   │   fut = t.cast(Future, rs.outcome)                       │
+│   411 │   │   │   │   retry_exc = self.retry_error_cls(fut)                  │
+│   412 │   │   │   │   if self.reraise:                                       │
+│ ❱ 413 │   │   │   │   │   raise retry_exc.reraise()                          │
+│   414 │   │   │   │   raise retry_exc from fut.exception()                   │
+│   415 │   │   │                                                              │
+│   416 │   │   │   self._add_action_func(exc_check)                           │
+│                                                                              │
+│ /home/david/bin/nobel-technical-books/.venv/lib/python3.12/site-packages/ten │
+│ acity/__init__.py:184 in reraise                                             │
+│                                                                              │
+│   181 │                                                                      │
+│   182 │   def reraise(self) -> t.NoReturn:                                   │
+│   183 │   │   if self.last_attempt.failed:                                   │
+│ ❱ 184 │   │   │   raise self.last_attempt.result()                           │
+│   185 │   │   raise self                                                     │
+│   186 │                                                                      │
+│   187 │   def __str__(self) -> str:                                          │
+│                                                                              │
+│ /usr/lib/python3.12/concurrent/futures/_base.py:449 in result                │
+│                                                                              │
+│   446 │   │   │   │   if self._state in [CANCELLED, CANCELLED_AND_NOTIFIED]: │
+│   447 │   │   │   │   │   raise CancelledError()                             │
+│   448 │   │   │   │   elif self._state == FINISHED:                          │
+│ ❱ 449 │   │   │   │   │   return self.__get_result()                         │
+│   450 │   │   │   │                                                          │
+│   451 │   │   │   │   self._condition.wait(timeout)                          │
+│   452                                                                        │
+│                                                                              │
+│ /usr/lib/python3.12/concurrent/futures/_base.py:401 in __get_result          │
+│                                                                              │
+│   398 │   def __get_result(self):                                            │
+│   399 │   │   if self._exception:                                            │
+│   400 │   │   │   try:                                                       │
+│ ❱ 401 │   │   │   │   raise self._exception                                  │
+│   402 │   │   │   finally:                                                   │
+│   403 │   │   │   │   # Break a reference cycle with the exception in        │
+│       self._exception                                                        │
+│   404 │   │   │   │   self = None                                            │
+│                                                                              │
+│ /home/david/bin/nobel-technical-books/.venv/lib/python3.12/site-packages/ten │
+│ acity/__init__.py:473 in __call__                                            │
+│                                                                              │
+│   470 │   │   │   do = self.iter(retry_state=retry_state)                    │
+│   471 │   │   │   if isinstance(do, DoAttempt):                              │
+│   472 │   │   │   │   try:                                                   │
+│ ❱ 473 │   │   │   │   │   result = fn(*args, **kwargs)                       │
+│   474 │   │   │   │   except BaseException:  # noqa: B902                    │
+│   475 │   │   │   │   │   retry_state.set_exception(sys.exc_info())  # type: │
+│       ignore[arg-type]                                                       │
+│   476 │   │   │   │   else:                                                  │
+│                                                                              │
+│ /home/david/bin/nobel-technical-books/src/nobel_books/adapters/google_books. │
+│ py:111 in _request                                                           │
+│                                                                              │
+│   108 │   │   │   │   params=params,                                         │
+│   109 │   │   │   │   headers={"User-Agent": self.user_agent, "Accept":      │
+│       "application/json"},                                                   │
+│   110 │   │   │   )                                                          │
+│ ❱ 111 │   │   │   response.raise_for_status()                                │
+│   112 │   │   │   return response                                            │
+│   113 │   │   finally:                                                       │
+│   114 │   │   │   self._last_request_at = self._clock()                      │
+│                                                                              │
+│ /home/david/bin/nobel-technical-books/.venv/lib/python3.12/site-packages/htt │
+│ px/_models.py:829 in raise_for_status                                        │
+│                                                                              │
+│    826 │   │   }                                                             │
+│    827 │   │   error_type = error_types.get(status_class, "Invalid status    │
+│        code")                                                                │
+│    828 │   │   message = message.format(self, error_type=error_type)         │
+│ ❱  829 │   │   raise HTTPStatusError(message, request=request,               │
+│        response=self)                                                        │
+│    830 │                                                                     │
+│    831 │   def json(self, **kwargs: typing.Any) -> typing.Any:               │
+│    832 │   │   return jsonlib.loads(self.content, **kwargs)                  │
+╰──────────────────────────────────────────────────────────────────────────────╯
+HTTPStatusError: Client error '429 Too Many Requests' for url 
+'https://www.googleapis.com/books/v1/volumes?q=inauthor%3A%22Aage+N.+Bohr%22&pri
+ntType=books&projection=full&maxResults=40&startIndex=0'
+For more information check: 
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+The above exception was the direct cause of the following exception:
+
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /home/david/bin/nobel-technical-books/src/nobel_books/cli.py:305 in discover │
+│                                                                              │
+│   302 │   │   │   │   │   page_size=source.page_size,                        │
+│   303 │   │   │   │   │                                                      │
+│       max_results_per_query=source.max_results_per_query,                    │
+│   304 │   │   │   │   )                                                      │
+│ ❱ 305 │   │   │   │   google_summary = discover_google_books(                │
+│   306 │   │   │   │   │   session,                                           │
+│   307 │   │   │   │   │   google_adapter,                                    │
+│   308 │   │   │   │   │   RawResponseCache(),                                │
+│                                                                              │
+│ /home/david/bin/nobel-technical-books/src/nobel_books/pipeline/google_books. │
+│ py:199 in discover_google_books                                              │
+│                                                                              │
+│   196 │   │   │   │   summary.queries += 1                                   │
+│   197 │   │   │   │   query_log = _log_query(session, laureate, variant)     │
+│   198 │   │   │   │   seen_for_query: set[str] = set()                       │
+│ ❱ 199 │   │   │   │   for fetched in adapter.volumes(variant.query,          │
+│       variant.kind):                                                         │
+│   200 │   │   │   │   │   summary.fetches += 1                               │
+│   201 │   │   │   │   │   source_fetch = _record_fetch(session, run,         │
+│       fetched, cache)                                                        │
+│   202 │   │   │   │   │   for volume in fetched.response.items:              │
+│                                                                              │
+│ /home/david/bin/nobel-technical-books/src/nobel_books/adapters/google_books. │
+│ py:127 in volumes                                                            │
+│                                                                              │
+│   124 │   │   │   │   │   payload: Any = response.json()                     │
+│   125 │   │   │   │   │   parsed =                                           │
+│       GoogleBooksResponse.model_validate(payload)                            │
+│   126 │   │   │   │   except (httpx.HTTPError, ValueError) as exc:           │
+│ ❱ 127 │   │   │   │   │   raise SourceUnavailableError("Google Books query   │
+│       failed") from exc                                                      │
+│   128 │   │   │   │   yield GoogleBooksFetch(                                │
+│   129 │   │   │   │   │   query=query,                                       │
+│   130 │   │   │   │   │   variant_type=variant_type,                         │
+╰──────────────────────────────────────────────────────────────────────────────╯
+SourceUnavailableError: Google Books query failed
+Reconciled 79 edition(s); recorded 820 merge proposal(s).
+Reconciled 79 edition(s); recorded 820 merge proposal(s).
+Clustered 851 canonical work(s), linked 79 edition(s), created 0 series work(s), and queued 735 review item(s).
+Error: project.contact_email is required for OpenAlex.
+Error: contact email is required for Crossref.
+Wikipedia: pages=0, sections=0, candidates=0, failures=0
+Classified 851 work(s): manual=0, low_confidence=848; scored 889 contribution(s), review=889.
+Scored 889 contribution(s); 889 require review.
+Exported 889 review row(s) to data/exports/review_queue.csv.
+Imported 0 review decision(s) from data/exports/review_queue.csv.
+Exported all: works=889, editions=79, evidence=6253, laureates=658, markdown_entries=904
+Audit written to data/exports/audit.json; blocking=0, zero-book=430, incomplete-coverage=658, stale-overrides=0.
+Audit written to data/exports/audit.json; blocking=0, zero-book=430, incomplete-coverage=658, stale-overrides=0.
+INFO:     Started server process [1871426]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:49214 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49228 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49214 - "GET /api/review?limit=100 HTTP/1.1" 200 OK
+^CINFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1871426]
+
