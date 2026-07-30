@@ -2,6 +2,7 @@
 
 import sys
 from pathlib import Path
+from typing import Annotated
 
 import typer
 from sqlalchemy import select
@@ -9,19 +10,23 @@ from sqlalchemy.orm import Session
 
 from nobel_books import __version__
 from nobel_books.adapters.nobel import NobelApiAdapter
+from nobel_books.adapters.wikidata import WikidataIdentityAdapter
 from nobel_books.cache import RawResponseCache
 from nobel_books.config import get_settings
 from nobel_books.db import database_status, make_engine, upgrade_database
 from nobel_books.errors import NobelBooksError
 from nobel_books.logging import configure_logging
 from nobel_books.models.database import Laureate
+from nobel_books.pipeline.identities import export_identity_review, resolve_identities
 from nobel_books.pipeline.laureates import sync_laureates
 
 app = typer.Typer(help="Build a provenance-rich bibliography of Nobel laureate books.")
 db_app = typer.Typer(help="Manage the bibliography database.")
 laureates_app = typer.Typer(help="Import and inspect Nobel laureates.")
+identities_app = typer.Typer(help="Resolve and review external person identities.")
 app.add_typer(db_app, name="db")
 app.add_typer(laureates_app, name="laureates")
+app.add_typer(identities_app, name="identities")
 
 
 def version_callback(value: bool) -> None:
@@ -118,3 +123,48 @@ def laureates_list() -> None:
                 typer.echo(f"{laureate.nobel_api_id}\t{laureate.display_name}")
     finally:
         engine.dispose()
+
+
+@identities_app.command("resolve")
+def identities_resolve() -> None:
+    """Resolve imported laureates through exact Wikidata Nobel IDs."""
+
+    settings = get_settings()
+    source = settings.sources.get("wikidata")
+    if source is None or not source.enabled or source.base_url is None:
+        typer.echo("Error: Wikidata source is not enabled and configured.", err=True)
+        raise typer.Exit(code=1)
+    adapter = WikidataIdentityAdapter(
+        source.base_url,
+        settings.project.user_agent,
+        batch_size=source.page_size,
+    )
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            summary = resolve_identities(session, adapter, RawResponseCache())
+    finally:
+        engine.dispose()
+    typer.echo(
+        f"Resolved identities: verified={summary.verified}, "
+        f"unresolved={summary.unresolved}, ambiguous={summary.ambiguous}, "
+        f"batches={summary.batches}"
+    )
+
+
+@identities_app.command("review-export")
+def identities_review_export(
+    output: Annotated[Path, typer.Option("--output", help="Review CSV path.")] = Path(
+        "data/exports/identity_review.csv"
+    ),
+) -> None:
+    """Export unresolved and ambiguous identity matches."""
+
+    settings = get_settings()
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            count = export_identity_review(session, output)
+    finally:
+        engine.dispose()
+    typer.echo(f"Exported {count} identity review row(s) to {output}.")

@@ -52,3 +52,4 @@ def test_sync_handles_pagination_organizations_and_duplicate_prizes(tmp_path: Pa
     assert fetch_count == 2
     assert run_count == 2
     assert len(list((tmp_path / "cache" / "nobel").glob("*.json"))) == 2
+    engine.dispose()

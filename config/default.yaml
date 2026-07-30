@@ -14,5 +14,10 @@ sources:
     base_url: "https://api.nobelprize.org/2.1"
     requests_per_second: 1.0
     page_size: 100
+  wikidata:
+    enabled: true
+    base_url: "https://query.wikidata.org/sparql"
+    requests_per_second: 0.5
+    page_size: 10
 
 log_level: "INFO"

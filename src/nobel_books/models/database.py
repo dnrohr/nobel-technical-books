@@ -3,7 +3,18 @@
 from datetime import datetime
 from enum import StrEnum
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -91,3 +102,51 @@ class PrizeAward(Base):
     source_fetch_id: Mapped[int] = mapped_column(ForeignKey("source_fetch.id"))
 
     laureate: Mapped[Laureate] = relationship(back_populates="prize_awards")
+
+
+class PersonNameVariant(Base):
+    """An exact person-name spelling with a separate matching key."""
+
+    __tablename__ = "person_name_variant"
+    __table_args__ = (
+        UniqueConstraint("laureate_id", "name", "source", name="uq_person_name_variant"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    laureate_id: Mapped[int] = mapped_column(ForeignKey("laureate.id"), index=True)
+    name: Mapped[str] = mapped_column(Text)
+    normalized_name: Mapped[str] = mapped_column(Text, index=True)
+    language: Mapped[str | None] = mapped_column(String(20))
+    script: Mapped[str | None] = mapped_column(String(30))
+    source: Mapped[str] = mapped_column(String(50))
+    is_preferred: Mapped[bool] = mapped_column(Boolean, default=False)
+    confidence: Mapped[float] = mapped_column(Float)
+
+
+class ExternalIdentity(Base):
+    """An authority identifier connected to a laureate."""
+
+    __tablename__ = "external_identity"
+    __table_args__ = (UniqueConstraint("scheme", "value", name="uq_external_identity"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    laureate_id: Mapped[int] = mapped_column(ForeignKey("laureate.id"), index=True)
+    scheme: Mapped[str] = mapped_column(String(40), index=True)
+    value: Mapped[str] = mapped_column(Text)
+    canonical_url: Mapped[str | None] = mapped_column(Text)
+    resolution_status: Mapped[str] = mapped_column(String(20), index=True)
+    confidence: Mapped[float] = mapped_column(Float)
+    evidence_json: Mapped[dict[str, object]] = mapped_column(JSON)
+
+
+class IdentityResolution(Base):
+    """Latest deterministic Wikidata resolution result for a laureate."""
+
+    __tablename__ = "identity_resolution"
+
+    laureate_id: Mapped[int] = mapped_column(ForeignKey("laureate.id"), primary_key=True)
+    status: Mapped[str] = mapped_column(String(20), index=True)
+    confidence: Mapped[float] = mapped_column(Float)
+    candidate_qids: Mapped[list[str]] = mapped_column(JSON)
+    source_fetch_id: Mapped[int] = mapped_column(ForeignKey("source_fetch.id"))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

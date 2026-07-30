@@ -1,0 +1,25 @@
+{
+  "head": {"vars": ["nobelId", "person", "personLabel", "altLabel", "orcid", "viaf"]},
+  "results": {
+    "bindings": [
+      {
+        "nobelId": {"type": "literal", "value": "1"},
+        "person": {"type": "uri", "value": "http://www.wikidata.org/entity/Q7186"},
+        "personLabel": {"xml:lang": "en", "type": "literal", "value": "Marie Curie"},
+        "altLabel": {"xml:lang": "en", "type": "literal", "value": "Marie Skłodowska-Curie"},
+        "orcid": {"type": "literal", "value": "0000-0000-0000-0001"},
+        "viaf": {"type": "literal", "value": "76353155"}
+      },
+      {
+        "nobelId": {"type": "literal", "value": "3"},
+        "person": {"type": "uri", "value": "http://www.wikidata.org/entity/Q3"},
+        "personLabel": {"xml:lang": "en", "type": "literal", "value": "Ambiguous Person"}
+      },
+      {
+        "nobelId": {"type": "literal", "value": "3"},
+        "person": {"type": "uri", "value": "http://www.wikidata.org/entity/Q33"},
+        "personLabel": {"xml:lang": "en", "type": "literal", "value": "Other Person"}
+      }
+    ]
+  }
+}
