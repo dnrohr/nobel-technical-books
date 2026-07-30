@@ -97,6 +97,7 @@ class PrizeAward(Base):
     laureate_id: Mapped[int] = mapped_column(ForeignKey("laureate.id"), index=True)
     category: Mapped[str] = mapped_column(String(20), index=True)
     year: Mapped[int] = mapped_column(Integer, index=True)
+    subfield: Mapped[str | None] = mapped_column(String(100), index=True)
     motivation: Mapped[str | None] = mapped_column(Text)
     share: Mapped[str | None] = mapped_column(String(20))
     source_fetch_id: Mapped[int] = mapped_column(ForeignKey("source_fetch.id"))

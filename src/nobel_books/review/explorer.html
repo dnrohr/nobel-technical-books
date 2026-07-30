@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nobel Books Explorer</title>
+  <style>
+    :root {
+      --ink: #17201d; --muted: #64706b; --paper: #f5f2ea; --panel: #fffdf8;
+      --line: #d9d4c7; --green: #173f35; --gold: #b6852d; --pale: #ebe6d9;
+      --shadow: 0 18px 50px rgba(36, 43, 38, .09);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--paper);
+      font: 15px/1.5 Inter, ui-sans-serif, system-ui, sans-serif; }
+    button, input, select { font: inherit; }
+    header { color: #f9f7ef; background: var(--green); padding: 2rem clamp(1rem,4vw,4rem) 3rem;
+      position: relative; overflow: hidden; }
+    header::after { content:""; position:absolute; width:28rem; height:28rem; border:1px solid #ffffff22;
+      border-radius:50%; right:-8rem; top:-17rem; box-shadow:0 0 0 4rem #ffffff08,0 0 0 8rem #ffffff05; }
+    .eyebrow { color:#d8b96f; text-transform:uppercase; letter-spacing:.18em; font-size:.72rem; font-weight:700; }
+    h1 { font: 500 clamp(2.4rem,5vw,4.6rem)/.98 Georgia,serif; margin:.45rem 0 .8rem; letter-spacing:-.035em; }
+    header p { color:#d8dfda; max-width:47rem; margin:0; font-size:1rem; }
+    .stats { display:grid; grid-template-columns:repeat(5,minmax(8rem,1fr)); gap:1px; background:#ffffff24;
+      margin:2rem 0 -5.6rem; position:relative; z-index:1; border:1px solid #ffffff22; border-radius:10px;
+      overflow:hidden; box-shadow:var(--shadow); }
+    .stat { background:#214a40; padding:1rem 1.2rem; min-height:5rem; }
+    .stat strong { display:block; font:500 1.65rem Georgia,serif; }
+    .stat span { color:#c6d1cc; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; }
+    main { max-width:1500px; margin:5.3rem auto 3rem; padding:0 clamp(1rem,3vw,3rem); }
+    .filters { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:1rem;
+      display:grid; grid-template-columns:minmax(14rem,2fr) repeat(4,minmax(9rem,1fr)); gap:.75rem; box-shadow:var(--shadow); }
+    label { display:block; color:var(--muted); font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700; }
+    input, select { width:100%; margin-top:.35rem; padding:.7rem .75rem; border:1px solid var(--line);
+      border-radius:7px; background:white; color:var(--ink); outline:none; }
+    input:focus, select:focus { border-color:var(--gold); box-shadow:0 0 0 3px #b6852d1d; }
+    .workspace { display:grid; grid-template-columns:minmax(19rem, .82fr) minmax(0, 1.7fr); gap:1rem; margin-top:1rem; align-items:start; }
+    .results, .detail { background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; min-height:36rem; }
+    .section-head { padding:1rem 1.15rem; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+    .section-head h2 { font:600 1.05rem Georgia,serif; margin:0; } .count { color:var(--muted); font-size:.8rem; }
+    #people { max-height:68vh; overflow:auto; }
+    .person { width:100%; text-align:left; border:0; border-bottom:1px solid var(--line); background:transparent;
+      padding:1rem 1.15rem; cursor:pointer; color:inherit; }
+    .person:hover, .person.active { background:#f1ede2; } .person.active { box-shadow:inset 3px 0 var(--gold); }
+    .person strong { display:block; font-family:Georgia,serif; font-size:1.02rem; margin-bottom:.25rem; }
+    .person-meta { color:var(--muted); font-size:.78rem; display:flex; gap:.55rem; flex-wrap:wrap; }
+    .dot::before { content:"·"; margin-right:.55rem; color:var(--gold); }
+    .detail-empty { display:grid; place-items:center; min-height:36rem; text-align:center; color:var(--muted); padding:2rem; }
+    .detail-inner { padding:clamp(1.2rem,3vw,2.2rem); }
+    .detail-title { display:flex; justify-content:space-between; gap:1rem; align-items:start; border-bottom:1px solid var(--line); padding-bottom:1.4rem; }
+    .detail h2 { font:500 clamp(2rem,4vw,3.2rem)/1 Georgia,serif; margin:.2rem 0 .6rem; letter-spacing:-.025em; }
+    .id { color:var(--muted); font-size:.78rem; }
+    .prizes { display:grid; gap:.7rem; margin:1.3rem 0; }
+    .prize { border-left:3px solid var(--gold); padding:.2rem 0 .2rem 1rem; }
+    .prize strong { text-transform:capitalize; } .prize p { margin:.3rem 0 0; color:#46504c; }
+    .pill { display:inline-flex; align-items:center; border:1px solid var(--line); border-radius:99px;
+      padding:.18rem .55rem; font-size:.72rem; color:#4e5954; background:#faf8f2; }
+    .pill.gold { border-color:#d5b779; background:#fbf3df; color:#735115; }
+    .work { border:1px solid var(--line); border-radius:9px; margin:.8rem 0; background:white; overflow:hidden; }
+    .work summary { list-style:none; cursor:pointer; padding:1rem 1.1rem; display:grid;
+      grid-template-columns:1fr auto; gap:.8rem; align-items:center; }
+    .work summary::-webkit-details-marker { display:none; }
+    .work h4 { font:600 1rem Georgia,serif; margin:0 0 .35rem; }
+    .work-meta { display:flex; gap:.4rem; flex-wrap:wrap; }
+    .chevron { color:var(--gold); font-size:1.2rem; transition:.2s; }.work[open] .chevron{transform:rotate(90deg)}
+    .work-body { border-top:1px solid var(--line); padding:1rem 1.1rem; color:#3f4945; }
+    .work-body h5 { color:var(--ink); margin:1.1rem 0 .45rem; text-transform:uppercase; letter-spacing:.09em; font-size:.7rem; }
+    .source-list, .edition-list { display:grid; gap:.5rem; }
+    .source, .edition { background:#f7f5ef; border-radius:7px; padding:.65rem .75rem; }
+    a { color:#1b6452; text-decoration-thickness:1px; text-underline-offset:2px; }
+    .pager { padding:.8rem 1rem; display:flex; justify-content:space-between; border-top:1px solid var(--line); }
+    .pager button { border:1px solid var(--line); background:white; padding:.45rem .7rem; border-radius:6px; cursor:pointer; }
+    .pager button:disabled { opacity:.35; cursor:default; }
+    .loading { opacity:.55; pointer-events:none; }
+    @media (max-width:900px) {
+      .stats { grid-template-columns:repeat(2,1fr); } .filters { grid-template-columns:1fr 1fr; }
+      .workspace { grid-template-columns:1fr; } #people { max-height:26rem; } .detail { min-height:20rem; }
+    }
+    @media (max-width:560px) { .filters { grid-template-columns:1fr; } .stats { margin-bottom:-7rem; } main { margin-top:6.8rem; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Research bibliography</div>
+    <h1>Nobel Books Explorer</h1>
+    <p>Explore books written and edited by Nobel laureates in Physics, Chemistry, and Physiology or Medicine—with prize context, editions, confidence, and source provenance.</p>
+    <section class="stats" id="stats"></section>
+  </header>
+  <main>
+    <section class="filters" aria-label="Bibliography filters">
+      <label>Search<input id="search" type="search" placeholder="Laureate name or Nobel ID"></label>
+      <label>Prize category<select id="category"><option value="">All categories</option></select></label>
+      <label>Award year<select id="year"><option value="">All years</option></select></label>
+      <label>Subfield<select id="subfield"><option value="">All subfields</option></select></label>
+      <label>Book coverage<select id="bookStatus"><option value="all">All laureates</option><option value="with_books">With candidates</option><option value="zero_books">Zero candidates</option></select></label>
+    </section>
+    <section class="workspace">
+      <aside class="results">
+        <div class="section-head"><h2>Laureates</h2><span class="count" id="resultCount"></span></div>
+        <div id="people"></div>
+        <div class="pager"><button id="prev">Previous</button><span class="count" id="pageLabel"></span><button id="next">Next</button></div>
+      </aside>
+      <section class="detail" id="detail">
+        <div class="detail-empty"><div><div class="eyebrow">Select a laureate</div><h3>Prize context meets publication history</h3><p>Choose a name to inspect awards, works, editions, identifiers, and evidence.</p></div></div>
+      </section>
+    </section>
+  </main>
+  <script>
+    const $ = id => document.getElementById(id);
+    const state = {offset:0, limit:100, total:0, selected:null};
+    const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const label = value => String(value || "unresolved").replaceAll("_"," ").replace(/\b\w/g,c=>c.toUpperCase());
+    const pct = value => value == null ? "—" : `${Math.round(value*100)}%`;
+    const query = () => {
+      const p = new URLSearchParams({limit:state.limit,offset:state.offset,book_status:$("bookStatus").value});
+      if($("search").value.trim()) p.set("q",$("search").value.trim());
+      if($("category").value) p.set("category",$("category").value);
+      if($("year").value) p.set("award_year",$("year").value);
+      if($("subfield").value) p.set("subfield",$("subfield").value);
+      return p;
+    };
+    async function initialize(){
+      const [stats,filters]=await Promise.all([fetch("/api/stats").then(r=>r.json()),fetch("/api/filters").then(r=>r.json())]);
+      const cards=[["laureates","Laureates"],["works","Canonical works"],["editions","Editions"],["relationships","Relationships"],["zero_book_laureates","Zero candidates"]];
+      $("stats").innerHTML=cards.map(([key,name])=>`<div class="stat"><strong>${stats[key].toLocaleString()}</strong><span>${name}</span></div>`).join("");
+      filters.categories.forEach(v=>$("category").add(new Option(label(v),v)));
+      filters.award_years.forEach(v=>$("year").add(new Option(v,v)));
+      filters.subfields.forEach(v=>$("subfield").add(new Option(v,v)));
+      await loadPeople();
+    }
+    async function loadPeople(){
+      $("people").classList.add("loading");
+      const data=await fetch(`/api/laureates?${query()}`).then(r=>r.json());
+      state.total=data.total; $("resultCount").textContent=`${data.total.toLocaleString()} results`;
+      $("pageLabel").textContent=data.total ? `${data.offset+1}–${Math.min(data.offset+data.items.length,data.total)}` : "0";
+      $("prev").disabled=state.offset===0; $("next").disabled=state.offset+state.limit>=state.total;
+      $("people").innerHTML=data.items.map(person=>{
+        const awards=person.prizes.map(p=>`${label(p.category)} ${p.year}`).join(" · ");
+        return `<button class="person ${state.selected===person.nobel_api_id?"active":""}" data-id="${escapeHtml(person.nobel_api_id)}">
+          <strong>${escapeHtml(person.name)}</strong><div class="person-meta"><span>${escapeHtml(awards)}</span>
+          <span class="dot">${person.work_count} works</span>${person.review_count?`<span class="dot">${person.review_count} to review</span>`:""}</div></button>`;
+      }).join("") || `<div class="detail-empty"><p>No laureates match these filters.</p></div>`;
+      $("people").classList.remove("loading");
+      document.querySelectorAll(".person").forEach(el=>el.onclick=()=>loadDetail(el.dataset.id));
+    }
+    function sourceLink(source){
+      const text=`${label(source.source)}${source.entity_id?` · ${source.entity_id}`:""}`;
+      return source.url?`<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(text)}</a>`:escapeHtml(text);
+    }
+    async function loadDetail(id){
+      state.selected=id; document.querySelectorAll(".person").forEach(el=>el.classList.toggle("active",el.dataset.id===id));
+      $("detail").innerHTML=`<div class="detail-empty"><p>Loading bibliography…</p></div>`;
+      const p=await fetch(`/api/laureates/${encodeURIComponent(id)}`).then(r=>r.json());
+      const prizes=p.prizes.map(prize=>`<article class="prize"><strong>${label(prize.category)} · ${prize.year}</strong>
+        ${prize.subfield?` <span class="pill gold">${escapeHtml(prize.subfield)}</span>`:""}
+        ${prize.award_summary?`<p>“${escapeHtml(prize.award_summary)}”</p>`:`<p>No award summary recorded.</p>`}</article>`).join("");
+      const identifiers=p.identifiers.map(i=>i.url?`<a class="pill" href="${escapeHtml(i.url)}" target="_blank" rel="noreferrer">${escapeHtml(i.scheme)} · ${escapeHtml(i.value)}</a>`:`<span class="pill">${escapeHtml(i.scheme)} · ${escapeHtml(i.value)}</span>`).join(" ");
+      const works=p.works.map(work=>`<details class="work"><summary><div><h4>${escapeHtml(work.title)}</h4>
+        <div class="work-meta"><span class="pill">${work.year||"Year unknown"}</span><span class="pill">${label(work.role)}</span>
+        <span class="pill gold">${label(work.classification)}</span><span class="pill">${label(work.review_status)}</span></div></div><span class="chevron">›</span></summary>
+        <div class="work-body">${work.original_title?`<p><strong>Original title:</strong> ${escapeHtml(work.original_title)}</p>`:""}
+        ${work.description?`<p>${escapeHtml(work.description)}</p>`:""}<p><strong>Audience:</strong> ${label(work.audience)} ·
+        <strong>Technicality:</strong> ${pct(work.technicality)} · <strong>Relationship confidence:</strong> ${pct(work.relationship_confidence)}</p>
+        ${work.classification_reason?`<p><strong>Classification:</strong> ${escapeHtml(work.classification_reason)}</p>`:""}
+        <h5>Work provenance</h5><div class="source-list">${work.sources.map(s=>`<div class="source">${sourceLink(s)}</div>`).join("")||"<span>No linked work sources.</span>"}</div>
+        <h5>Editions (${work.editions.length})</h5><div class="edition-list">${work.editions.map(e=>`<div class="edition"><strong>${escapeHtml(e.title)}</strong>
+        <div class="person-meta"><span>${e.year||"Year unknown"}</span>${e.language?`<span class="dot">${escapeHtml(e.language)}</span>`:""}
+        ${e.publisher?`<span class="dot">${escapeHtml(e.publisher)}</span>`:""}${e.isbn13?`<span class="dot">ISBN ${escapeHtml(e.isbn13)}</span>`:""}
+        ${e.oclc?`<span class="dot">OCLC ${escapeHtml(e.oclc)}</span>`:""}</div></div>`).join("")||"<span>No editions linked.</span>"}</div></div></details>`).join("");
+      $("detail").innerHTML=`<div class="detail-inner"><div class="detail-title"><div><div class="eyebrow">Nobel laureate</div>
+        <h2>${escapeHtml(p.name)}</h2><div class="id">Nobel API ID ${escapeHtml(p.nobel_api_id)}
+        ${p.birth_date?` · ${escapeHtml(p.birth_date)}`:""}${p.death_date?`–${escapeHtml(p.death_date)}`:""}</div></div>
+        <span class="pill gold">${p.work_count} candidate works</span></div><div class="prizes">${prizes}</div>
+        <div>${identifiers}</div><div class="section-head" style="padding:1.6rem 0 .7rem"><h2>Bibliography</h2>
+        <span class="count">${p.verified_count} verified · ${p.review_count} to review</span></div>${works||`<div class="detail-empty" style="min-height:12rem"><p>No candidate books discovered yet.</p></div>`}</div>`;
+    }
+    let timer; ["search","category","year","subfield","bookStatus"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",()=>{
+      clearTimeout(timer); timer=setTimeout(()=>{state.offset=0;loadPeople()},id==="search"?250:0);
+    }));
+    $("prev").onclick=()=>{state.offset=Math.max(0,state.offset-state.limit);loadPeople()};
+    $("next").onclick=()=>{state.offset+=state.limit;loadPeople()};
+    initialize();
+  </script>
+</body>
+</html>

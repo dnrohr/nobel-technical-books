@@ -97,6 +97,12 @@ def export_works_csv(session: Session, path: Path) -> int:
                 "nobel_api_id": laureate.nobel_api_id,
                 "prize_categories": "|".join(sorted({prize.category for prize in prizes})),
                 "prize_years": "|".join(str(prize.year) for prize in prizes),
+                "prize_subfields": "|".join(
+                    sorted({prize.subfield for prize in prizes if prize.subfield})
+                ),
+                "award_summaries": "|".join(
+                    prize.motivation for prize in prizes if prize.motivation
+                ),
                 "preferred_title": work.preferred_title,
                 "original_title": work.original_title or "",
                 "first_publication_year": work.first_publication_year or "",
@@ -147,6 +153,8 @@ def export_works_csv(session: Session, path: Path) -> int:
         "nobel_api_id",
         "prize_categories",
         "prize_years",
+        "prize_subfields",
+        "award_summaries",
         "preferred_title",
         "original_title",
         "first_publication_year",
@@ -358,7 +366,15 @@ def bibliography_document(session: Session) -> dict[str, object]:
             {
                 "nobel_api_id": laureate.nobel_api_id,
                 "name": laureate.display_name,
-                "prizes": [{"category": prize.category, "year": prize.year} for prize in prizes],
+                "prizes": [
+                    {
+                        "category": prize.category,
+                        "year": prize.year,
+                        "subfield": prize.subfield,
+                        "award_summary": prize.motivation,
+                    }
+                    for prize in prizes
+                ],
                 "identifiers": dict(identifiers),
                 "coverage": {"work_count": len(works)},
                 "works": works,

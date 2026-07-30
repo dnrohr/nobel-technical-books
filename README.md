@@ -42,6 +42,7 @@ uv run nobel-books export all
 uv run nobel-books audit run
 uv run nobel-books audit run --previous data/exports/accepted-audit.json
 uv run nobel-books review serve
+uv run nobel-books explore
 ```
 
 Configuration is loaded from `config/default.yaml`, then an optional `.env` file,
@@ -187,7 +188,11 @@ file is deliberately never updated automatically.
 WorldCat Search API 2.0 support is optional, structured-JSON-only, and disabled
 by default. It requires an OAuth bearer token from `WORLDCAT_ACCESS_TOKEN`; no
 WorldCat HTML is scraped and credentials are never placed in URLs. The minimal
-review UI binds to `127.0.0.1` by default and writes decisions through the same
-manual-override function as CSV import. The full CLI remains usable without
+browser explorer binds to `127.0.0.1` by default and supports search and filters
+across laureates, prize categories, award years, optional subfields, and book
+coverage. Laureate profiles expose the Nobel award summary, canonical works,
+editions, confidence, identifiers, and source provenance. Its optional review
+actions write decisions through the same manual-override function as CSV import.
+The full CLI remains usable without
 WorldCat credentials or a running UI. See [docs/operations.md](docs/operations.md)
 for deployment, audit-baseline, credential, and recovery guidance.

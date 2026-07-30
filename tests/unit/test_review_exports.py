@@ -60,7 +60,8 @@ def seed(session: Session) -> Contribution:
             laureate_id=laureate.id,
             category="physics",
             year=1950,
-            motivation=None,
+            subfield="theoretical physics",
+            motivation="for foundational discoveries in example physics",
             share="1",
             source_fetch_id=1,
         )
@@ -236,6 +237,9 @@ def test_review_roundtrip_manual_precedence_and_all_exports(tmp_path: Path) -> N
         assert (output_dir / name).exists()
     document = json.loads((output_dir / "bibliography.json").read_text(encoding="utf-8"))
     assert "limitations" in document
+    assert document["laureates"][0]["prizes"][0]["year"] == 1950
+    assert document["laureates"][0]["prizes"][0]["subfield"] == "theoretical physics"
+    assert document["laureates"][0]["prizes"][0]["award_summary"].startswith("for foundational")
     exported_work = document["laureates"][0]["works"][0]
     assert exported_work["evidence"]
     assert exported_work["editions"][0]["isbn13"] == "9780000000002"

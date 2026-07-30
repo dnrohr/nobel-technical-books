@@ -512,7 +512,23 @@ def review_serve(
     host: Annotated[str, typer.Option(help="Bind address.")] = "127.0.0.1",
     port: Annotated[int, typer.Option(help="Bind port.")] = 8000,
 ) -> None:
-    """Serve the minimal review UI, bound to localhost by default."""
+    """Serve the bibliography explorer with review actions."""
+
+    _serve_explorer(host, port)
+
+
+@app.command("explore")
+def explore(
+    host: Annotated[str, typer.Option(help="Bind address.")] = "127.0.0.1",
+    port: Annotated[int, typer.Option(help="Bind port.")] = 8000,
+) -> None:
+    """Explore laureates, prizes, books, editions, and provenance."""
+
+    _serve_explorer(host, port)
+
+
+def _serve_explorer(host: str, port: int) -> None:
+    """Run the local explorer application."""
 
     import uvicorn
 

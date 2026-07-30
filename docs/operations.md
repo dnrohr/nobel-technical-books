@@ -18,10 +18,13 @@ Export/import review CSVs with `nobel-books review export` and
 `nobel-books review import`. To use the local interface:
 
 ```bash
-uv run nobel-books review serve
+uv run nobel-books explore
 ```
 
-The default bind address is `127.0.0.1`. The UI has no authentication; do not
+The explorer reads the local bibliography database and displays award year,
+award summary (the official Nobel motivation), optional research subfield,
+works, editions, and provenance. The default bind address is `127.0.0.1`. The
+UI has no authentication; do not
 bind it to a public or shared interface without adding an authenticated reverse
 proxy. Both interfaces write the same durable `ManualOverride` rows.
 

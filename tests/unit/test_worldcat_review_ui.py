@@ -53,6 +53,19 @@ def test_review_ui_writes_standard_manual_override(tmp_path: Path) -> None:
         key = f"1::work-key::{contribution.role}"
 
     client = TestClient(create_review_app(engine))
+    page = client.get("/")
+    assert page.status_code == 200
+    assert "Nobel Books Explorer" in page.text
+    assert client.get("/api/stats").json()["laureates"] == 1
+    listing = client.get("/api/laureates", params={"award_year": 1950}).json()
+    assert listing["total"] == 1
+    assert listing["items"][0]["prizes"][0]["subfield"] == "theoretical physics"
+    detail = client.get("/api/laureates/1").json()
+    assert detail["prizes"][0]["year"] == 1950
+    assert detail["prizes"][0]["award_summary"].startswith("for foundational")
+    assert detail["works"][0]["sources"][0]["source"] == "wikidata"
+    assert detail["works"][0]["editions"][0]["isbn13"] == "9780000000002"
+
     queue = client.get("/api/review")
     assert queue.status_code == 200
     assert queue.json()[0]["review_key"] == key
