@@ -1,0 +1,5 @@
+# Initial source reliability classes from DESIGN.md.
+sources:
+  nobel:
+    reliability: authoritative_population
+

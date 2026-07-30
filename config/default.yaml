@@ -1,0 +1,17 @@
+project:
+  contact_email: ""
+  user_agent: "nobel-laureate-books/0.1 (+contact email required)"
+  database_url: "sqlite:///data/nobel_books.sqlite3"
+
+categories:
+  - physics
+  - chemistry
+  - medicine
+
+sources:
+  nobel:
+    enabled: true
+    base_url: "https://api.nobelprize.org/2.1"
+
+log_level: "INFO"
+
