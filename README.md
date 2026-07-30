@@ -3,7 +3,7 @@
 A reproducible, provenance-rich bibliography of books written or edited by Nobel
 laureates in Physics, Chemistry, and Physiology or Medicine.
 
-This repository currently implements **Milestones 0–9** from [DESIGN.md](DESIGN.md):
+This repository currently implements **Milestones 0–10** from [DESIGN.md](DESIGN.md):
 the project scaffold, authoritative Nobel laureate ingestion, exact Wikidata
 identity resolution, Wikidata and Google Books discovery, and cautious Open
 Library enrichment.
@@ -34,6 +34,8 @@ uv run nobel-books reconcile works
 uv run nobel-books discover --source openalex --laureate-id 102
 uv run nobel-books discover --source crossref
 uv run nobel-books discover --source wikipedia --laureate-id 102
+uv run nobel-books classify
+uv run nobel-books score
 ```
 
 Configuration is loaded from `config/default.yaml`, then an optional `.env` file,
@@ -141,3 +143,14 @@ only those section indexes. Conservative list and `Cite book` parsing emits
 low-confidence, `needs_corroboration` candidates. Each assertion records the
 exact page ID, revision ID, section, and cached response. Page or section
 failures increment the run summary and do not stop other laureates.
+
+## Milestone 10 behavior
+
+Deterministic classification combines titles, subjects, descriptions, publishers,
+source types, and scholarly-source evidence into the documented taxonomy,
+technicality score, audience, confidence, and a human-readable reason. Separate
+laureate-work relationship confidence uses structured roles, independent-source
+agreement, and stable authority linkage. Thresholds distinguish automatic,
+provisional, review, and rejected relationships. Golden tests keep technical
+Feynman lectures separate from memoir/anecdotal writing. Database-backed manual
+classifications always take precedence over automated reruns.

@@ -395,3 +395,32 @@ class ManualOverride(Base):
     reviewer: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     supersedes_id: Mapped[int | None] = mapped_column(ForeignKey("manual_override.id"))
+
+
+class Contribution(Base):
+    """A scored laureate relationship to a canonical work or edition."""
+
+    __tablename__ = "contribution"
+    __table_args__ = (
+        UniqueConstraint(
+            "laureate_id",
+            "canonical_work_id",
+            "edition_id",
+            "role",
+            name="uq_contribution_target_role",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    laureate_id: Mapped[int] = mapped_column(ForeignKey("laureate.id"), index=True)
+    canonical_work_id: Mapped[int | None] = mapped_column(
+        ForeignKey("canonical_work.id"), index=True
+    )
+    edition_id: Mapped[int | None] = mapped_column(ForeignKey("edition.id"), index=True)
+    role: Mapped[str] = mapped_column(String(30), index=True)
+    credited_name: Mapped[str | None] = mapped_column(Text)
+    position: Mapped[int | None] = mapped_column(Integer)
+    relationship_confidence: Mapped[float] = mapped_column(Float, index=True)
+    review_status: Mapped[str] = mapped_column(String(30), index=True)
+    is_default_included: Mapped[bool] = mapped_column(Boolean, index=True)
+    evidence_json: Mapped[list[dict[str, object]]] = mapped_column(JSON)

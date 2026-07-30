@@ -1,0 +1,14 @@
+cases:
+  - title: "The Feynman Lectures on Physics"
+    metadata:
+      - "quantum mechanics"
+      - "undergraduate textbook"
+    sources: [openlibrary, wikidata]
+    expected_class: textbook
+    minimum_technicality: 0.7
+  - title: "Surely You're Joking, Mr. Feynman!"
+    metadata:
+      - "adventures and anecdotes"
+    sources: [openlibrary]
+    expected_class: memoir
+    maximum_technicality: 0.2

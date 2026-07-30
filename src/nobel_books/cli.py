@@ -18,6 +18,11 @@ from nobel_books.adapters.openlibrary import OpenLibraryAdapter
 from nobel_books.adapters.wikidata import WikidataBookAdapter, WikidataIdentityAdapter
 from nobel_books.adapters.wikipedia import WikipediaAdapter
 from nobel_books.cache import RawResponseCache
+from nobel_books.classification.classifier import (
+    classify_works,
+    load_rules,
+    score_relationships,
+)
 from nobel_books.config import get_settings
 from nobel_books.db import database_status, make_engine, upgrade_database
 from nobel_books.errors import NobelBooksError
@@ -410,4 +415,41 @@ def reconcile_works_command(
         f"Clustered {summary.works} canonical work(s), linked "
         f"{summary.editions_linked} edition(s), created {summary.series_works} "
         f"series work(s), and queued {summary.review_items} review item(s)."
+    )
+
+
+@app.command("classify")
+def classify() -> None:
+    """Apply deterministic taxonomy and confidence rules."""
+
+    settings = get_settings()
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            classification = classify_works(session, load_rules())
+            relationships = score_relationships(session)
+    finally:
+        engine.dispose()
+    typer.echo(
+        f"Classified {classification.classified} work(s): "
+        f"manual={classification.manual}, low_confidence={classification.low_confidence}; "
+        f"scored {relationships.contributions} contribution(s), "
+        f"review={relationships.contribution_reviews}."
+    )
+
+
+@app.command("score")
+def score() -> None:
+    """Recompute laureate-work relationship confidence."""
+
+    settings = get_settings()
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            summary = score_relationships(session)
+    finally:
+        engine.dispose()
+    typer.echo(
+        f"Scored {summary.contributions} contribution(s); "
+        f"{summary.contribution_reviews} require review."
     )

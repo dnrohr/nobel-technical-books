@@ -1,3 +1,68 @@
-# Milestone 10 will define deterministic classification rules here.
-rules: []
+taxonomy:
+  - technical_monograph
+  - textbook
+  - reference
+  - edited_volume
+  - popular_science
+  - memoir
+  - essays
+  - fiction
+  - other
+  - unknown
 
+technical_indicators:
+  - treatise
+  - principles of
+  - theory of
+  - quantum
+  - thermodynamics
+  - biochemistry
+  - molecular
+  - clinical
+  - handbook
+  - textbook
+  - lectures on
+  - advanced
+  - graduate
+  - monograph
+
+textbook_indicators:
+  - textbook
+  - lectures on
+  - course in
+  - introduction to
+
+reference_indicators:
+  - handbook
+  - encyclopedia
+  - reference
+
+memoir_indicators:
+  - autobiography
+  - memoir
+  - reminiscences
+  - adventures
+  - surely you're joking
+
+essay_indicators:
+  - essays
+  - letters
+  - correspondence
+
+fiction_indicators:
+  - fiction
+  - novel
+
+audience:
+  graduate:
+    - advanced
+    - graduate
+    - monograph
+  undergraduate:
+    - textbook
+    - introduction to
+    - lectures on
+  professional:
+    - handbook
+    - clinical
+    - reference
