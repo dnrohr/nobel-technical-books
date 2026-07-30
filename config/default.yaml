@@ -60,4 +60,9 @@ sources:
       - works
       - major works
 
+exports:
+  output_dir: "data/exports"
+  include_rejected: false
+  include_unreviewed: false
+
 log_level: "INFO"

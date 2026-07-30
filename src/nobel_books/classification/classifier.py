@@ -16,6 +16,7 @@ from nobel_books.models.database import (
     Edition,
     EditionSourceRecord,
     ExternalIdentity,
+    Laureate,
     ManualOverride,
     SourceRecord,
     WorkSourceRecord,
@@ -361,7 +362,35 @@ def score_relationships(session: Session) -> ClassificationSummary:
             }
             for item in items
         ]
+        laureate = session.get(Laureate, laureate_id)
+        work = session.get(CanonicalWork, work_id)
+        if laureate is not None and work is not None:
+            target_key = f"{laureate.nobel_api_id}::{work.cluster_key}::{role}"
+            manual = session.scalar(
+                select(ManualOverride)
+                .where(
+                    ManualOverride.target_type == "contribution",
+                    ManualOverride.target_key == target_key,
+                    ManualOverride.action.in_(("include", "exclude")),
+                )
+                .order_by(ManualOverride.created_at.desc(), ManualOverride.id.desc())
+            )
+            if manual is not None:
+                if manual.action == "include":
+                    contribution.review_status = "verified"
+                    contribution.is_default_included = True
+                else:
+                    contribution.review_status = "rejected"
+                    contribution.is_default_included = False
+                contribution.evidence_json = [
+                    *contribution.evidence_json,
+                    {
+                        "source": "manual_override",
+                        "override_id": manual.id,
+                        "reason": manual.reason,
+                    },
+                ]
         summary.contributions += 1
-        summary.contribution_reviews += int(not included)
+        summary.contribution_reviews += int(not contribution.is_default_included)
     session.commit()
     return summary

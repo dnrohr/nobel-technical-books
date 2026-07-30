@@ -38,6 +38,16 @@ class SourceConfig(BaseModel):
     bibliography_headings: list[str] = Field(default_factory=list)
 
 
+class ExportConfig(BaseModel):
+    """Locations and switches for generated bibliography artifacts."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    output_dir: Path = Path("data/exports")
+    include_rejected: bool = False
+    include_unreviewed: bool = False
+
+
 class Settings(BaseSettings):
     """Application configuration."""
 
@@ -51,6 +61,7 @@ class Settings(BaseSettings):
     project: ProjectConfig = Field(default_factory=ProjectConfig)
     categories: list[str] = Field(default_factory=lambda: ["physics", "chemistry", "medicine"])
     sources: dict[str, SourceConfig] = Field(default_factory=dict)
+    exports: ExportConfig = Field(default_factory=ExportConfig)
     log_level: str = "INFO"
 
     @classmethod

@@ -3,7 +3,7 @@
 A reproducible, provenance-rich bibliography of books written or edited by Nobel
 laureates in Physics, Chemistry, and Physiology or Medicine.
 
-This repository currently implements **Milestones 0–10** from [DESIGN.md](DESIGN.md):
+This repository currently implements **Milestones 0–11** from [DESIGN.md](DESIGN.md):
 the project scaffold, authoritative Nobel laureate ingestion, exact Wikidata
 identity resolution, Wikidata and Google Books discovery, and cautious Open
 Library enrichment.
@@ -36,6 +36,9 @@ uv run nobel-books discover --source crossref
 uv run nobel-books discover --source wikipedia --laureate-id 102
 uv run nobel-books classify
 uv run nobel-books score
+uv run nobel-books review export
+uv run nobel-books review import data/exports/review_queue.csv
+uv run nobel-books export all
 ```
 
 Configuration is loaded from `config/default.yaml`, then an optional `.env` file,
@@ -154,3 +157,13 @@ agreement, and stable authority linkage. Thresholds distinguish automatic,
 provisional, review, and rejected relationships. Golden tests keep technical
 Feynman lectures separate from memoir/anecdotal writing. Database-backed manual
 classifications always take precedence over automated reruns.
+
+## Milestone 11 behavior
+
+The UTF-8 review queue uses stable Nobel-ID/work-cluster/role keys. Accept and
+reject decisions require reasons, become first-class manual overrides, and retain
+precedence over later confidence reruns. Export commands produce separate
+`works.csv`, `editions.csv`, and `evidence.csv` files; nested
+`bibliography.json`; a classified Markdown bibliography; and JSON/Markdown
+coverage reports with prior-run deltas. Work and edition exports fail rather than
+silently emitting records without source evidence.

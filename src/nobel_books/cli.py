@@ -26,6 +26,14 @@ from nobel_books.classification.classifier import (
 from nobel_books.config import get_settings
 from nobel_books.db import database_status, make_engine, upgrade_database
 from nobel_books.errors import NobelBooksError
+from nobel_books.export.exporters import (
+    export_all,
+    export_editions_csv,
+    export_evidence_csv,
+    export_json,
+    export_markdown,
+    export_works_csv,
+)
 from nobel_books.logging import configure_logging
 from nobel_books.models.database import Laureate
 from nobel_books.pipeline.discovery import discover_wikidata_candidates
@@ -44,16 +52,24 @@ from nobel_books.pipeline.scholarly import (
 from nobel_books.pipeline.wikipedia import discover_wikipedia
 from nobel_books.reconciliation.editions import reconcile_editions
 from nobel_books.reconciliation.works import cluster_works
+from nobel_books.review.workflow import (
+    export_review_queue,
+    import_review_decisions,
+)
 
 app = typer.Typer(help="Build a provenance-rich bibliography of Nobel laureate books.")
 db_app = typer.Typer(help="Manage the bibliography database.")
 laureates_app = typer.Typer(help="Import and inspect Nobel laureates.")
 identities_app = typer.Typer(help="Resolve and review external person identities.")
 reconcile_app = typer.Typer(help="Reconcile normalized source records.")
+review_app = typer.Typer(help="Export and import durable review decisions.")
+export_app = typer.Typer(help="Export bibliography artifacts.")
 app.add_typer(db_app, name="db")
 app.add_typer(laureates_app, name="laureates")
 app.add_typer(identities_app, name="identities")
 app.add_typer(reconcile_app, name="reconcile")
+app.add_typer(review_app, name="review")
+app.add_typer(export_app, name="export")
 
 
 def version_callback(value: bool) -> None:
@@ -453,3 +469,89 @@ def score() -> None:
         f"Scored {summary.contributions} contribution(s); "
         f"{summary.contribution_reviews} require review."
     )
+
+
+@review_app.command("export")
+def review_export(
+    output: Annotated[Path, typer.Option("--output", help="Review queue CSV path.")] = Path(
+        "data/exports/review_queue.csv"
+    ),
+) -> None:
+    """Export stable low-confidence contribution decisions."""
+
+    settings = get_settings()
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            count = export_review_queue(session, output)
+    finally:
+        engine.dispose()
+    typer.echo(f"Exported {count} review row(s) to {output}.")
+
+
+@review_app.command("import")
+def review_import(path: Path) -> None:
+    """Import accept/reject decisions as durable manual overrides."""
+
+    settings = get_settings()
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            count = import_review_decisions(session, path)
+            score_relationships(session)
+    finally:
+        engine.dispose()
+    typer.echo(f"Imported {count} review decision(s) from {path}.")
+
+
+def _run_export(kind: str) -> None:
+    settings = get_settings()
+    output_dir = settings.exports.output_dir
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            if kind == "csv":
+                counts = {
+                    "works": export_works_csv(session, output_dir / "works.csv"),
+                    "editions": export_editions_csv(session, output_dir / "editions.csv"),
+                    "evidence": export_evidence_csv(session, output_dir / "evidence.csv"),
+                }
+            elif kind == "json":
+                counts = {"laureates": export_json(session, output_dir / "bibliography.json")}
+            elif kind == "markdown":
+                counts = {"entries": export_markdown(session, output_dir / "bibliography.md")}
+            else:
+                counts = export_all(session, output_dir)
+    finally:
+        engine.dispose()
+    typer.echo(
+        f"Exported {kind}: " + ", ".join(f"{name}={count}" for name, count in counts.items())
+    )
+
+
+@export_app.command("csv")
+def export_csv_command() -> None:
+    """Export works, editions, and evidence CSVs."""
+
+    _run_export("csv")
+
+
+@export_app.command("json")
+def export_json_command() -> None:
+    """Export nested bibliography JSON."""
+
+    _run_export("json")
+
+
+@export_app.command("markdown")
+def export_markdown_command() -> None:
+    """Export classified Markdown bibliography."""
+
+    _run_export("markdown")
+
+
+@export_app.command("all")
+def export_all_command() -> None:
+    """Export all bibliography and coverage artifacts."""
+
+    _run_export("all")
