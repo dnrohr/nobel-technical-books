@@ -41,7 +41,11 @@ class GoogleBooksFetch(BaseModel):
 def redact_api_key(url: str) -> str:
     parts = urlsplit(url)
     query = urlencode(
-        [(key, value) for key, value in parse_qsl(parts.query) if key.casefold() != "key"]
+        [
+            (key, value)
+            for key, value in parse_qsl(parts.query)
+            if key.casefold() not in {"key", "api_key"}
+        ]
     )
     return urlunsplit((parts.scheme, parts.netloc, parts.path, query, parts.fragment))
 

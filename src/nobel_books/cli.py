@@ -10,8 +10,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from nobel_books import __version__
+from nobel_books.adapters.crossref import CrossrefAdapter
 from nobel_books.adapters.google_books import GoogleBooksAdapter
 from nobel_books.adapters.nobel import NobelApiAdapter
+from nobel_books.adapters.openalex import OpenAlexAdapter
 from nobel_books.adapters.openlibrary import OpenLibraryAdapter
 from nobel_books.adapters.wikidata import WikidataBookAdapter, WikidataIdentityAdapter
 from nobel_books.cache import RawResponseCache
@@ -27,6 +29,11 @@ from nobel_books.pipeline.laureates import sync_laureates
 from nobel_books.pipeline.openlibrary import (
     discover_openlibrary,
     export_openlibrary_identity_review,
+)
+from nobel_books.pipeline.scholarly import (
+    discover_openalex,
+    enrich_crossref,
+    write_source_limitations,
 )
 from nobel_books.reconciliation.editions import reconcile_editions
 from nobel_books.reconciliation.works import cluster_works
@@ -195,7 +202,13 @@ def discover(
 ) -> None:
     """Discover source-native book candidates without canonical merging."""
 
-    if source_name not in {"wikidata", "openlibrary", "google-books"}:
+    if source_name not in {
+        "wikidata",
+        "openlibrary",
+        "google-books",
+        "openalex",
+        "crossref",
+    }:
         typer.echo(f"Error: source is not implemented: {source_name}", err=True)
         raise typer.Exit(code=1)
     settings = get_settings()
@@ -250,7 +263,7 @@ def discover(
                     f"editions={openlibrary_summary.editions}, "
                     f"fetches={openlibrary_summary.fetches}"
                 )
-            else:
+            elif source_name == "google-books":
                 api_key = (
                     os.environ.get(source.api_key_env) if source.api_key_env is not None else None
                 )
@@ -275,6 +288,59 @@ def discover(
                     f"new_volumes={google_summary.new_volumes}, "
                     f"ambiguous={google_summary.ambiguous_relationships}, "
                     f"fetches={google_summary.fetches}"
+                )
+            elif source_name == "openalex":
+                if not settings.project.contact_email:
+                    typer.echo(
+                        "Error: project.contact_email is required for OpenAlex.",
+                        err=True,
+                    )
+                    raise typer.Exit(code=1)
+                openalex_adapter = OpenAlexAdapter(
+                    source.base_url,
+                    settings.project.contact_email,
+                    api_key=(os.environ.get(source.api_key_env) if source.api_key_env else None),
+                    include_xpac=source.include_xpac,
+                    requests_per_second=source.requests_per_second,
+                    page_size=source.page_size,
+                )
+                scholarly = discover_openalex(
+                    session,
+                    openalex_adapter,
+                    RawResponseCache(),
+                    max_authors=source.max_authors_per_run,
+                    nobel_api_id=laureate_id,
+                )
+                write_source_limitations(
+                    Path("data/exports/source_limitations.json"),
+                    include_xpac=source.include_xpac,
+                )
+                message = (
+                    f"OpenAlex: authors={scholarly.authors_resolved}, "
+                    f"books={scholarly.openalex_books}, fetches={scholarly.fetches}"
+                )
+            else:
+                contact = (
+                    os.environ.get(source.mailto_env) if source.mailto_env else None
+                ) or settings.project.contact_email
+                if not contact:
+                    typer.echo("Error: contact email is required for Crossref.", err=True)
+                    raise typer.Exit(code=1)
+                crossref_adapter = CrossrefAdapter(
+                    source.base_url,
+                    contact,
+                    user_agent=settings.project.user_agent,
+                    requests_per_second=source.requests_per_second,
+                )
+                scholarly = enrich_crossref(session, crossref_adapter, RawResponseCache())
+                write_source_limitations(
+                    Path("data/exports/source_limitations.json"),
+                    include_xpac=settings.sources.get("openalex", source).include_xpac,
+                )
+                message = (
+                    f"Crossref: live_book_types={scholarly.crossref_book_types}, "
+                    f"DOIs_enriched={scholarly.crossref_dois}, "
+                    f"fetches={scholarly.fetches}"
                 )
     finally:
         engine.dispose()

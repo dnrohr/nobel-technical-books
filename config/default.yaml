@@ -33,5 +33,19 @@ sources:
     max_authors_per_run: 5
     max_results_per_query: 400
     api_key_env: "GOOGLE_BOOKS_API_KEY"
+  openalex:
+    enabled: true
+    base_url: "https://api.openalex.org"
+    requests_per_second: 1.0
+    page_size: 100
+    max_authors_per_run: 10
+    api_key_env: "OPENALEX_API_KEY"
+    include_xpac: false
+  crossref:
+    enabled: true
+    base_url: "https://api.crossref.org"
+    requests_per_second: 1.0
+    page_size: 100
+    mailto_env: "CROSSREF_MAILTO"
 
 log_level: "INFO"

@@ -3,7 +3,7 @@
 A reproducible, provenance-rich bibliography of books written or edited by Nobel
 laureates in Physics, Chemistry, and Physiology or Medicine.
 
-This repository currently implements **Milestones 0–7** from [DESIGN.md](DESIGN.md):
+This repository currently implements **Milestones 0–8** from [DESIGN.md](DESIGN.md):
 the project scaffold, authoritative Nobel laureate ingestion, exact Wikidata
 identity resolution, Wikidata and Google Books discovery, and cautious Open
 Library enrichment.
@@ -31,6 +31,8 @@ uv run nobel-books discover --source google-books --laureate-id 102
 uv run nobel-books normalize
 uv run nobel-books reconcile editions
 uv run nobel-books reconcile works
+uv run nobel-books discover --source openalex --laureate-id 102
+uv run nobel-books discover --source crossref
 ```
 
 Configuration is loaded from `config/default.yaml`, then an optional `.env` file,
@@ -119,3 +121,13 @@ Potential merges and suspicious splits are exported to
 `data/exports/work_review_queue.csv`. Stable YAML merge/split decisions are
 stored as first-class database overrides and continue to apply when the YAML file
 is absent on later runs.
+
+## Milestone 8 behavior
+
+OpenAlex author resolution requires a verified OpenAlex ID or exact ORCID bridge;
+name-only matches are not accepted. Work requests are filtered to `type:book`,
+cursor-paginated, and optionally include XPAC only when configured. Crossref
+discovers currently supported book-like types and enriches existing DOI-bearing
+editions through the polite pool with contact information. Coverage boundaries,
+including the XPAC quality warning and the omission of general/older books, are
+written to `data/exports/source_limitations.json`.

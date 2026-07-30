@@ -33,6 +33,8 @@ class SourceConfig(BaseModel):
     max_authors_per_run: int = 10
     max_results_per_query: int = 400
     api_key_env: str | None = None
+    mailto_env: str | None = None
+    include_xpac: bool = False
 
 
 class Settings(BaseSettings):
