@@ -13,6 +13,8 @@ from nobel_books.models.database import (
     Assertion,
     DiscoveryQuery,
     Laureate,
+    PipelineRun,
+    PipelineStatus,
     SourceFetch,
     SourceRecord,
 )
@@ -116,4 +118,73 @@ def test_controlled_queries_pagination_deduplication_and_ambiguity(tmp_path: Pat
         assertion.predicate for assertion in assertions if assertion.source_record_id == vol2.id
     } >= {"title", "authors", "relationship_status", "query_variant"}
     assert len(list((tmp_path / "cache" / "google_books").glob("*.json"))) == 4
+    engine.dispose()
+
+
+@respx.mock
+def test_rate_limit_preserves_completed_queries_and_stops_cleanly(tmp_path: Path) -> None:
+    calls = 0
+
+    def response(_: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return httpx.Response(
+                200,
+                json={
+                    "totalItems": 1,
+                    "items": [
+                        {
+                            "id": "PRESERVED",
+                            "volumeInfo": {
+                                "title": "Preserved Result",
+                                "authors": ["Marie Curie"],
+                            },
+                        }
+                    ],
+                },
+            )
+        return httpx.Response(429, headers={"Retry-After": "1"})
+
+    respx.get("https://books.example/volumes").mock(side_effect=response)
+    database_url = f"sqlite:///{tmp_path / 'limited.sqlite3'}"
+    upgrade_database(database_url)
+    engine = make_engine(database_url)
+    now = datetime.now(UTC)
+    with Session(engine) as session:
+        session.add(
+            Laureate(
+                nobel_api_id="1",
+                display_name="Marie Curie",
+                given_name="Marie",
+                family_name="Curie",
+                created_at=now,
+                updated_at=now,
+            )
+        )
+        session.commit()
+        summary = discover_google_books(
+            session,
+            GoogleBooksAdapter(
+                "https://books.example",
+                "fixture-agent",
+                requests_per_second=1000,
+                page_size=1,
+                max_results_per_query=1,
+                sleeper=lambda _: None,
+                clock=lambda: 1.0,
+            ),
+            RawResponseCache(tmp_path / "cache"),
+            max_authors=1,
+        )
+        preserved = session.scalar(
+            select(SourceRecord).where(SourceRecord.source_entity_id == "PRESERVED")
+        )
+        run = session.scalar(select(PipelineRun).order_by(PipelineRun.id.desc()))
+
+    assert summary.stopped_early
+    assert summary.failures == 1
+    assert preserved is not None
+    assert run is not None
+    assert run.status == PipelineStatus.FAILED
     engine.dispose()

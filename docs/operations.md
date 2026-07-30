@@ -12,6 +12,18 @@ uv run pytest
 
 Ordinary tests and CI use fixtures and do not call live APIs.
 
+Before using Open Library, OpenAlex, or the Crossref polite pool, set a contact
+address in `.env`:
+
+```dotenv
+NOBEL_BOOKS_PROJECT__CONTACT_EMAIL=researcher@example.org
+CROSSREF_MAILTO=researcher@example.org
+```
+
+Google Books may enforce anonymous or project-specific quotas. A rate-limited
+discovery run now preserves completed queries, records the run as failed, and
+reports `stopped_early=True`; resume it later or configure `GOOGLE_BOOKS_API_KEY`.
+
 ## Review and accepted snapshots
 
 Export/import review CSVs with `nobel-books review export` and
@@ -32,6 +44,10 @@ Run `nobel-books audit run` after a full pipeline. Promote an audit JSON file to
 an accepted baseline only after human review, then pass that file with
 `--previous` on later runs. Exit status 2 means a verified record was removed or
 destructively changed. The command never promotes its own output.
+
+```bash
+uv run nobel-books audit run --previous data/exports/accepted-audit.json
+```
 
 ## WorldCat
 

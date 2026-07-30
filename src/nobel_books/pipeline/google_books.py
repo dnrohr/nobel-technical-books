@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from nobel_books.adapters.google_books import GoogleBooksAdapter, GoogleBooksFetch
 from nobel_books.cache import RawResponseCache
+from nobel_books.errors import SourceUnavailableError
 from nobel_books.models.database import (
     DiscoveryQuery,
     Laureate,
@@ -36,6 +37,9 @@ class GoogleBooksSummary:
     new_volumes: int = 0
     ambiguous_relationships: int = 0
     assertions: int = 0
+    failures: int = 0
+    stopped_early: bool = False
+    error_message: str | None = None
 
 
 def author_query_variants(laureate: Laureate) -> list[QueryVariant]:
@@ -196,27 +200,38 @@ def discover_google_books(
                 summary.queries += 1
                 query_log = _log_query(session, laureate, variant)
                 seen_for_query: set[str] = set()
-                for fetched in adapter.volumes(variant.query, variant.kind):
-                    summary.fetches += 1
-                    source_fetch = _record_fetch(session, run, fetched, cache)
-                    for volume in fetched.response.items:
-                        summary.volumes += 1
-                        seen_for_query.add(volume.id)
-                        created, count, ambiguous = _persist_volume(
-                            session,
-                            laureate,
-                            fetched,
-                            source_fetch,
-                            volume.id,
-                            volume.volume_info,
-                        )
-                        summary.new_volumes += int(created)
-                        summary.assertions += count
-                        summary.ambiguous_relationships += int(ambiguous)
+                try:
+                    for fetched in adapter.volumes(variant.query, variant.kind):
+                        summary.fetches += 1
+                        source_fetch = _record_fetch(session, run, fetched, cache)
+                        for volume in fetched.response.items:
+                            summary.volumes += 1
+                            seen_for_query.add(volume.id)
+                            created, count, ambiguous = _persist_volume(
+                                session,
+                                laureate,
+                                fetched,
+                                source_fetch,
+                                volume.id,
+                                volume.volume_info,
+                            )
+                            summary.new_volumes += int(created)
+                            summary.assertions += count
+                            summary.ambiguous_relationships += int(ambiguous)
+                except SourceUnavailableError as exc:
+                    query_log.status = "failed"
+                    query_log.result_count = len(seen_for_query)
+                    summary.failures += 1
+                    summary.stopped_early = True
+                    summary.error_message = str(exc)
+                    break
                 query_log.status = "succeeded"
                 query_log.result_count = len(seen_for_query)
-        run.status = PipelineStatus.SUCCEEDED
+            if summary.stopped_early:
+                break
+        run.status = PipelineStatus.FAILED if summary.stopped_early else PipelineStatus.SUCCEEDED
         run.finished_at = datetime.now(UTC)
+        run.error_message = summary.error_message
         session.commit()
     except Exception as exc:
         session.rollback()

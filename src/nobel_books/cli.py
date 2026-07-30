@@ -314,7 +314,9 @@ def discover(
                     f"volumes={google_summary.volumes}, "
                     f"new_volumes={google_summary.new_volumes}, "
                     f"ambiguous={google_summary.ambiguous_relationships}, "
-                    f"fetches={google_summary.fetches}"
+                    f"fetches={google_summary.fetches}, "
+                    f"failures={google_summary.failures}, "
+                    f"stopped_early={google_summary.stopped_early}"
                 )
             elif source_name == "openalex":
                 if not settings.project.contact_email:
