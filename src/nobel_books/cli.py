@@ -17,6 +17,7 @@ from nobel_books.adapters.openalex import OpenAlexAdapter
 from nobel_books.adapters.openlibrary import OpenLibraryAdapter
 from nobel_books.adapters.wikidata import WikidataBookAdapter, WikidataIdentityAdapter
 from nobel_books.adapters.wikipedia import WikipediaAdapter
+from nobel_books.audit.report import write_audit_report
 from nobel_books.cache import RawResponseCache
 from nobel_books.classification.classifier import (
     classify_works,
@@ -64,12 +65,14 @@ identities_app = typer.Typer(help="Resolve and review external person identities
 reconcile_app = typer.Typer(help="Reconcile normalized source records.")
 review_app = typer.Typer(help="Export and import durable review decisions.")
 export_app = typer.Typer(help="Export bibliography artifacts.")
+audit_app = typer.Typer(help="Audit coverage, regressions, and dataset drift.")
 app.add_typer(db_app, name="db")
 app.add_typer(laureates_app, name="laureates")
 app.add_typer(identities_app, name="identities")
 app.add_typer(reconcile_app, name="reconcile")
 app.add_typer(review_app, name="review")
 app.add_typer(export_app, name="export")
+app.add_typer(audit_app, name="audit")
 
 
 def version_callback(value: bool) -> None:
@@ -555,3 +558,43 @@ def export_all_command() -> None:
     """Export all bibliography and coverage artifacts."""
 
     _run_export("all")
+
+
+@audit_app.command("run")
+def audit_run(
+    output: Annotated[Path, typer.Option("--output")] = Path("data/exports/audit.json"),
+    previous: Annotated[Path | None, typer.Option("--previous")] = None,
+    regressions: Annotated[Path, typer.Option("--regressions")] = Path(
+        "tests/golden/regression_bibliographies.yaml"
+    ),
+) -> None:
+    """Report destructive drift, suspicious gaps, and incomplete research coverage."""
+
+    settings = get_settings()
+    enabled_sources = {
+        name for name, config in settings.sources.items() if config.enabled and name != "nobel"
+    }
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            report = write_audit_report(
+                session,
+                output,
+                enabled_sources,
+                previous_path=previous,
+                regression_path=regressions,
+            )
+    finally:
+        engine.dispose()
+    differential = report["differential"]
+    incomplete = report["incomplete_summary"]
+    if not isinstance(differential, dict) or not isinstance(incomplete, dict):
+        raise typer.Exit(code=1)
+    typer.echo(
+        f"Audit written to {output}; blocking={len(differential['blocking_changes'])}, "
+        f"zero-book={incomplete['zero_book_laureates']}, "
+        f"incomplete-coverage={incomplete['incomplete_source_coverage']}, "
+        f"stale-overrides={incomplete['stale_overrides']}."
+    )
+    if differential["blocking_changes"]:
+        raise typer.Exit(code=2)

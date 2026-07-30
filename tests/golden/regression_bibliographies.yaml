@@ -1,0 +1,22 @@
+laureates:
+  - name: Marie Curie
+    minimum_candidates: 1
+    audit_note: Older multilingual records and two target-category prizes.
+  - name: Richard P. Feynman
+    minimum_candidates: 2
+    audit_note: Technical lectures must remain distinct from memoir and anecdotal books.
+  - name: Lev Landau
+    minimum_candidates: 1
+    audit_note: Multi-volume technical series and coauthorship.
+  - name: Linus Pauling
+    minimum_candidates: 1
+    audit_note: Many books and both target and non-target Nobel prizes.
+  - name: Frederick Sanger
+    minimum_candidates: 0
+    audit_note: Two prizes in the same target category.
+  - name: Albert Einstein
+    minimum_candidates: 1
+    audit_note: Numerous editions, translations, popular, and technical works.
+  - name: Katalin Karikó
+    minimum_candidates: 0
+    audit_note: Modern medicine control for true-empty versus missing coverage.

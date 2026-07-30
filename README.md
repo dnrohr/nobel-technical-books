@@ -3,7 +3,7 @@
 A reproducible, provenance-rich bibliography of books written or edited by Nobel
 laureates in Physics, Chemistry, and Physiology or Medicine.
 
-This repository currently implements **Milestones 0–11** from [DESIGN.md](DESIGN.md):
+This repository currently implements **Milestones 0–12** from [DESIGN.md](DESIGN.md):
 the project scaffold, authoritative Nobel laureate ingestion, exact Wikidata
 identity resolution, Wikidata and Google Books discovery, and cautious Open
 Library enrichment.
@@ -39,6 +39,8 @@ uv run nobel-books score
 uv run nobel-books review export
 uv run nobel-books review import data/exports/review_queue.csv
 uv run nobel-books export all
+uv run nobel-books audit run
+uv run nobel-books audit run --previous data/exports/accepted-audit.json
 ```
 
 Configuration is loaded from `config/default.yaml`, then an optional `.env` file,
@@ -167,3 +169,12 @@ precedence over later confidence reruns. Export commands produce separate
 `bibliography.json`; a classified Markdown bibliography; and JSON/Markdown
 coverage reports with prior-run deltas. Work and edition exports fail rather than
 silently emitting records without source evidence.
+
+## Milestone 12 behavior
+
+`audit run` writes a stable dataset snapshot and reports added, removed, and
+changed relationships, candidate-count drift, zero-book laureates, missing source
+coverage, source contribution counts, stale overrides, and hand-checked regression
+bibliographies. Removal or destructive modification of a previously verified
+relationship exits with status 2 so it cannot pass unattended. The accepted audit
+file is deliberately never updated automatically.
