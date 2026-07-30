@@ -30,3 +30,12 @@ def test_environment_overrides_yaml(config_file: Path, monkeypatch: pytest.Monke
 
     assert settings.project.database_url == "sqlite:///override.sqlite3"
     assert settings.project.contact_email == "test@example.org"
+
+
+def test_default_worldcat_source_is_disabled() -> None:
+    get_settings.cache_clear()
+
+    settings = get_settings()
+
+    assert settings.sources["worldcat"].enabled is False
+    assert settings.sources["worldcat"].api_key_env == "WORLDCAT_ACCESS_TOKEN"

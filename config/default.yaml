@@ -59,6 +59,11 @@ sources:
       - publications
       - works
       - major works
+  worldcat:
+    enabled: false
+    base_url: "https://americas.discovery.api.oclc.org"
+    requests_per_second: 0.5
+    api_key_env: "WORLDCAT_ACCESS_TOKEN"
 
 exports:
   output_dir: "data/exports"

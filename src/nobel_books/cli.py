@@ -507,6 +507,25 @@ def review_import(path: Path) -> None:
     typer.echo(f"Imported {count} review decision(s) from {path}.")
 
 
+@review_app.command("serve")
+def review_serve(
+    host: Annotated[str, typer.Option(help="Bind address.")] = "127.0.0.1",
+    port: Annotated[int, typer.Option(help="Bind port.")] = 8000,
+) -> None:
+    """Serve the minimal review UI, bound to localhost by default."""
+
+    import uvicorn
+
+    from nobel_books.review.web import create_review_app
+
+    settings = get_settings()
+    engine = make_engine(settings.project.database_url)
+    try:
+        uvicorn.run(create_review_app(engine), host=host, port=port)
+    finally:
+        engine.dispose()
+
+
 def _run_export(kind: str) -> None:
     settings = get_settings()
     output_dir = settings.exports.output_dir

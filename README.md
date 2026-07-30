@@ -3,7 +3,7 @@
 A reproducible, provenance-rich bibliography of books written or edited by Nobel
 laureates in Physics, Chemistry, and Physiology or Medicine.
 
-This repository currently implements **Milestones 0–12** from [DESIGN.md](DESIGN.md):
+This repository implements **Milestones 0–13** from [DESIGN.md](DESIGN.md):
 the project scaffold, authoritative Nobel laureate ingestion, exact Wikidata
 identity resolution, Wikidata and Google Books discovery, and cautious Open
 Library enrichment.
@@ -41,6 +41,7 @@ uv run nobel-books review import data/exports/review_queue.csv
 uv run nobel-books export all
 uv run nobel-books audit run
 uv run nobel-books audit run --previous data/exports/accepted-audit.json
+uv run nobel-books review serve
 ```
 
 Configuration is loaded from `config/default.yaml`, then an optional `.env` file,
@@ -178,3 +179,13 @@ coverage, source contribution counts, stale overrides, and hand-checked regressi
 bibliographies. Removal or destructive modification of a previously verified
 relationship exits with status 2 so it cannot pass unattended. The accepted audit
 file is deliberately never updated automatically.
+
+## Milestone 13 behavior
+
+WorldCat Search API 2.0 support is optional, structured-JSON-only, and disabled
+by default. It requires an OAuth bearer token from `WORLDCAT_ACCESS_TOKEN`; no
+WorldCat HTML is scraped and credentials are never placed in URLs. The minimal
+review UI binds to `127.0.0.1` by default and writes decisions through the same
+manual-override function as CSV import. The full CLI remains usable without
+WorldCat credentials or a running UI. See [docs/operations.md](docs/operations.md)
+for deployment, audit-baseline, credential, and recovery guidance.
