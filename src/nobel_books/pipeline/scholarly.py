@@ -310,4 +310,8 @@ def source_limitations_document(*, include_xpac: bool) -> dict[str, object]:
 def write_source_limitations(path: Path, *, include_xpac: bool) -> None:
     document = source_limitations_document(include_xpac=include_xpac)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(document, indent=2, sort_keys=True), encoding="utf-8")
+    path.write_text(
+        json.dumps(document, indent=2, sort_keys=True),
+        encoding="utf-8",
+        newline="\n",
+    )

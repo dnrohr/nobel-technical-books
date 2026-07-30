@@ -5,10 +5,25 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from dotenv import dotenv_values
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 
 from nobel_books.errors import ConfigurationError
+
+
+def get_credential(name: str | None, path: Path = Path(".env")) -> str | None:
+    """Read a credential from the process environment, then the local dotenv file."""
+
+    if not name:
+        return None
+    import os
+
+    process_value = os.environ.get(name)
+    if process_value:
+        return process_value
+    dotenv_value = dotenv_values(path).get(name)
+    return dotenv_value if isinstance(dotenv_value, str) and dotenv_value else None
 
 
 class ProjectConfig(BaseModel):

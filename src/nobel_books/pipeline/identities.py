@@ -241,7 +241,7 @@ def export_identity_review(session: Session, path: Path) -> int:
     ).all()
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.writer(handle)
+        writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(["nobel_api_id", "display_name", "status", "candidate_qids"])
         for laureate, resolution in rows:
             writer.writerow(

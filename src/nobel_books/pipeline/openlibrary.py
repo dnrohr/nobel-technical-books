@@ -18,6 +18,7 @@ from nobel_books.adapters.openlibrary import (
     OpenLibraryFetch,
 )
 from nobel_books.cache import RawResponseCache
+from nobel_books.errors import SourceUnavailableError
 from nobel_books.models.database import (
     ExternalIdentity,
     Laureate,
@@ -40,6 +41,7 @@ class OpenLibrarySummary:
     editions: int = 0
     fetches: int = 0
     assertions: int = 0
+    failures: int = 0
 
 
 def _record_fetch(
@@ -266,37 +268,47 @@ def discover_openlibrary(
     summary = OpenLibrarySummary(authors_considered=len(laureates))
     try:
         for laureate in laureates:
-            author_id = _resolve_author(session, run, laureate, adapter, cache, summary)
-            if author_id is None:
-                continue
-            summary.authors_verified += 1
-            for works_fetch in adapter.author_works(author_id):
-                summary.fetches += 1
-                source_fetch = _record_fetch(session, run, works_fetch, cache)
-                work_ids, count = _persist_entries(
-                    session,
-                    source_fetch,
-                    works_fetch,
-                    "work",
-                    "author_id",
-                )
-                summary.works += len(work_ids)
-                summary.assertions += count
-                for work_id in work_ids:
-                    for editions_fetch in adapter.work_editions(work_id):
+            try:
+                with session.begin_nested():
+                    author_id = _resolve_author(session, run, laureate, adapter, cache, summary)
+                    if author_id is None:
+                        continue
+                    summary.authors_verified += 1
+                    for works_fetch in adapter.author_works(author_id):
                         summary.fetches += 1
-                        edition_fetch_record = _record_fetch(session, run, editions_fetch, cache)
-                        edition_ids, edition_count = _persist_entries(
+                        source_fetch = _record_fetch(session, run, works_fetch, cache)
+                        work_ids, count = _persist_entries(
                             session,
-                            edition_fetch_record,
-                            editions_fetch,
-                            "edition",
-                            "work_id",
+                            source_fetch,
+                            works_fetch,
+                            "work",
+                            "author_id",
                         )
-                        summary.editions += len(edition_ids)
-                        summary.assertions += edition_count
+                        summary.works += len(work_ids)
+                        summary.assertions += count
+                        for work_id in work_ids:
+                            for editions_fetch in adapter.work_editions(work_id):
+                                summary.fetches += 1
+                                edition_fetch_record = _record_fetch(
+                                    session, run, editions_fetch, cache
+                                )
+                                edition_ids, edition_count = _persist_entries(
+                                    session,
+                                    edition_fetch_record,
+                                    editions_fetch,
+                                    "edition",
+                                    "work_id",
+                                )
+                                summary.editions += len(edition_ids)
+                                summary.assertions += edition_count
+            except SourceUnavailableError:
+                summary.failures += 1
+                continue
         run.status = PipelineStatus.SUCCEEDED
         run.finished_at = datetime.now(UTC)
+        run.error_message = (
+            f"{summary.failures} author request(s) skipped" if summary.failures else None
+        )
         session.commit()
     except Exception as exc:
         session.rollback()
@@ -326,7 +338,7 @@ def export_openlibrary_identity_review(session: Session, path: Path) -> int:
     ).all()
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.writer(handle)
+        writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(
             [
                 "nobel_api_id",

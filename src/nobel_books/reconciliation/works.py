@@ -380,7 +380,7 @@ def export_work_review(session: Session, path: Path) -> int:
     ).all()
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.writer(handle)
+        writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(
             [
                 "status",

@@ -9,10 +9,10 @@
 
 #### Technical works
 
-- *Atomic interaction in penetration phenomena* (1948); author; reference; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL196396M), [source 2](https://openlibrary.org/works/OL1274859W)
-- *Nuclear Structure* (1969); author; reference; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL10450839M), [source 2](https://openlibrary.org/books/OL10450840M), [source 3](https://openlibrary.org/books/OL11276638M)
-- *On the fine structure in Alpha decay* (1955); author; reference; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL209178M), [source 2](https://openlibrary.org/works/OL1274864W)
-- *The coupling of nuclear surface oscillations to the motion of individual nucleons* (1952); author; reference; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL202609M), [source 2](https://openlibrary.org/works/OL1274861W)
+- *Atomic interaction in penetration phenomena* (1948); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL196396M), [source 2](https://openlibrary.org/works/OL1274859W)
+- *Nuclear Structure* (1969); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL10450839M), [source 2](https://openlibrary.org/books/OL10450840M), [source 3](https://openlibrary.org/books/OL11276638M)
+- *On the fine structure in Alpha decay* (1955); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL209178M), [source 2](https://openlibrary.org/works/OL1274864W)
+- *The coupling of nuclear surface oscillations to the motion of individual nucleons* (1952); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL202609M), [source 2](https://openlibrary.org/works/OL1274861W)
 
 #### Popular science
 
@@ -109,14 +109,13 @@
 
 #### Technical works
 
-- *Ether and the Theory of Relativity* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q19115081)
+- *Ether and the Theory of Relativity* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q19115081)
 
 #### Popular science
 
 
 #### Memoir and essays
 
-- *The principle of relativity: a collection of original memoirs on the special and general theory of relativity* (unknown year); author; memoir; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q130259854)
 
 #### Edited works
 
@@ -142,6 +141,7 @@
 - *Relativity: The Special and the General Theory* (1920); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q114571573), [source 2](https://www.wikidata.org/wiki/Q114651868), [source 3](https://www.wikidata.org/wiki/Q140085253)
 - *The Meaning of Relativity (1922)* (1922); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q123598647), [source 2](https://www.wikidata.org/wiki/Q19093719)
 - *The Oxford Book of Modern Science Writing* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q596511)
+- *The principle of relativity: a collection of original memoirs on the special and general theory of relativity* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q130259854)
 - *Why Socialism?* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q3400616)
 - *Why War?* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q3400610)
 
@@ -175,9 +175,9 @@
 
 #### Edited works
 
-- *Great Soviet Encyclopedia* (unknown year); editor; reference; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q234535)
-- *Great Soviet Encyclopedia (1969–1978), volume 1* (unknown year); editor; reference; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q126248620)
-- *Great Soviet Encyclopedia (1969–1978), volume 2* (unknown year); editor; reference; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q85884927)
+- *Great Soviet Encyclopedia* (unknown year); editor; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q234535)
+- *Great Soviet Encyclopedia (1969–1978), volume 1* (unknown year); editor; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q126248620)
+- *Great Soviet Encyclopedia (1969–1978), volume 2* (unknown year); editor; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q85884927)
 - *Great encyclopedic dictionary* (unknown year); editor; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q4093022)
 - *Soviet Encyclopedic Dictionary* (unknown year); editor; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q4426485)
 
@@ -692,7 +692,7 @@
 
 #### Technical works
 
-- *Quantum Mechanics* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q130402044)
+- *Quantum Mechanics* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q130402044)
 
 #### Popular science
 
@@ -918,7 +918,7 @@
 
 #### Technical works
 
-- *Electricity and Magnetism (2ed, 9781139005043)* (1965); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q126098670), [source 2](https://www.wikidata.org/wiki/Q126106225), [source 3](https://www.wikidata.org/wiki/Q126119005)
+- *Electricity and Magnetism (2ed, 9781139005043)* (1965); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q126098670), [source 2](https://www.wikidata.org/wiki/Q126106225), [source 3](https://www.wikidata.org/wiki/Q126119005)
 
 #### Popular science
 
@@ -1585,7 +1585,6 @@
 
 #### Memoir and essays
 
-- *The principle of relativity: a collection of original memoirs on the special and general theory of relativity* (unknown year); author; memoir; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q130259854)
 
 #### Edited works
 
@@ -1596,6 +1595,7 @@
 - *Nova Guinea* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q2002777)
 - *Q17348520* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q17348520)
 - *Q19231347* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q19231347)
+- *The principle of relativity: a collection of original memoirs on the special and general theory of relativity* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q130259854)
 - *Translation:The Principle of Relativity (Lorentz)* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q19150059)
 
 ### Henri Becquerel
@@ -2449,7 +2449,7 @@
 
 #### Technical works
 
-- *Theory of elasticity - Course of theoretical physics Volume 7* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q96578289)
+- *Theory of elasticity - Course of theoretical physics Volume 7* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q96578289)
 
 #### Popular science
 
@@ -2477,7 +2477,7 @@
 
 #### Technical works
 
-- *The theory of sound* (1877); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q104904202), [source 2](https://www.wikidata.org/wiki/Q104904271), [source 3](https://www.wikidata.org/wiki/Q104904316)
+- *The theory of sound* (1877); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q104904202), [source 2](https://www.wikidata.org/wiki/Q104904271), [source 3](https://www.wikidata.org/wiki/Q104904316)
 
 #### Popular science
 
@@ -2600,7 +2600,7 @@
 
 #### Technical works
 
-- *Treatise on Radioactivity* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q24041517)
+- *Treatise on Radioactivity* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q24041517)
 
 #### Popular science
 
@@ -2700,8 +2700,8 @@
 
 #### Technical works
 
-- *Dynamical Theory of Crystal Lattices* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q5319038)
-- *Principles of Optics: Electromagnetic Theory of Propagation, Interference and Diffraction of Light* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q15076680)
+- *Dynamical Theory of Crystal Lattices* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q5319038)
+- *Principles of Optics: Electromagnetic Theory of Propagation, Interference and Diffraction of Light* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q15076680)
 
 #### Popular science
 
@@ -2722,9 +2722,9 @@
 
 #### Technical works
 
-- *Eight Lectures on Theoretical Physics* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q19093110)
-- *The origin and development of the quantum theory* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q116278122)
-- *Theory of Heat* (1932); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q122976491), [source 2](https://www.wikidata.org/wiki/Q122977132)
+- *Eight Lectures on Theoretical Physics* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q19093110)
+- *The origin and development of the quantum theory* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q116278122)
+- *Theory of Heat* (1932); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q122976491), [source 2](https://www.wikidata.org/wiki/Q122977132)
 
 #### Popular science
 
@@ -2890,7 +2890,7 @@
 
 #### Technical works
 
-- *Zacharias, Jerrold Reinach (1905-1986), physicist and science educator* (unknown year); author; reference; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q103886385)
+- *Zacharias, Jerrold Reinach (1905-1986), physicist and science educator* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q103886385)
 
 #### Popular science
 
@@ -2977,8 +2977,8 @@
 
 #### Technical works
 
-- *General theory of relativity* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q115247957)
-- *Principles of Quantum Mechanics* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q7245197)
+- *General theory of relativity* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q115247957)
+- *Principles of Quantum Mechanics* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q7245197)
 
 #### Popular science
 
@@ -3291,18 +3291,17 @@
 
 #### Technical works
 
-- *"Nobody understands quantum mechanics"* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q131416693)
-- *Feynman Lectures on Computation* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q57393018)
-- *QED: The Strange Theory of Light and Matter* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q7265419)
-- *Quantum mechanical computers* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q42307870)
-- *The Feynman Lectures on Physics* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q682339)
+- *"Nobody understands quantum mechanics"* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q131416693)
+- *Feynman Lectures on Computation* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q57393018)
+- *QED: The Strange Theory of Light and Matter* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q7265419)
+- *Quantum mechanical computers* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q42307870)
+- *The Feynman Lectures on Physics* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q682339)
 
 #### Popular science
 
 
 #### Memoir and essays
 
-- *“Surely You're Joking, Mr. Feynman!”* (unknown year); author; memoir; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q2743592)
 
 #### Edited works
 
@@ -3331,6 +3330,7 @@
 - *The Meaning of It All* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q7750812)
 - *The Pleasure of Finding Things Out* (1999); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q60383718), [source 2](https://www.wikidata.org/wiki/Q7757497)
 - *There's Plenty of Room at the Bottom* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q2279500)
+- *“Surely You're Joking, Mr. Feynman!”* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q2743592)
 
 ### Robert A. Millikan
 
@@ -3342,13 +3342,13 @@
 
 #### Memoir and essays
 
-- *The autobiography of Robert A. Millikan* (unknown year); author; memoir; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q91611661)
 
 #### Edited works
 
 
 #### Unresolved candidates
 
+- *The autobiography of Robert A. Millikan* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q91611661)
 - *The electron, its isolation and measurement and the determination of some of its properties* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q91613264)
 
 ### Robert B. Laughlin
@@ -3706,7 +3706,7 @@
 
 #### Technical works
 
-- *Lectures on Quantum Mechanics* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q24083245)
+- *Lectures on Quantum Mechanics* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q24083245)
 
 #### Popular science
 
@@ -3915,7 +3915,7 @@
 
 #### Technical works
 
-- *The Physical Principles of the Quantum Theory* (1930); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q114832839), [source 2](https://www.wikidata.org/wiki/Q16975414)
+- *The Physical Principles of the Quantum Theory* (1930); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q114832839), [source 2](https://www.wikidata.org/wiki/Q16975414)
 
 #### Popular science
 
@@ -4302,11 +4302,27 @@
 
 #### Unresolved candidates
 
+- *Adolf von Baeyer's gesammelte werke.* (1905); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL23377526M), [source 2](https://openlibrary.org/books/OL23548154M), [source 3](https://openlibrary.org/books/OL6354286M)
+- *Das neue chemische Laboratorium der Akademie der Wissenschaften zu München* (1880); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL18466684M), [source 2](https://openlibrary.org/works/OL7602974W)
+- *Gelehrte im für und wider* (2002); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL21230003M), [source 2](https://openlibrary.org/works/OL7602975W)
+- *Liebig's verdienste um den unterricht in den naturwissenschaften* (1892); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL58761275M), [source 2](https://openlibrary.org/works/OL43144462W)
+- *Ueber den kreislauf des kohlenstoffs in der organischen natur* (1866); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL59810138M), [source 2](https://openlibrary.org/books/OL60719990M), [source 3](https://openlibrary.org/works/OL43870171W)
+- *Ueber die chemische Synthese* (1878); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL57490853M), [source 2](https://openlibrary.org/works/OL42375895W)
 
 ### Ahmed Zewail
 
 #### Technical works
 
+- *4D electron microscopy* (2009); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL23971430M), [source 2](https://openlibrary.org/books/OL24547250M), [source 3](https://openlibrary.org/books/OL51021121M)
+- *Advances in laser spectroscopy I, August 23-24, 1977, San Diego, California* (1977); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL4754724M), [source 2](https://openlibrary.org/works/OL22586393W)
+- *Femtochemistry* (1994); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL3969189M), [source 2](https://openlibrary.org/books/OL49249197M), [source 3](https://openlibrary.org/books/OL49251224M)
+- *Femtochemistry* (1994); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL1105665M), [source 2](https://openlibrary.org/books/OL9194193M), [source 3](https://openlibrary.org/books/OL9194194M)
+- *Laser and molecular beam studies of chemical reaction dynamics* (1996); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL61857653M), [source 2](https://openlibrary.org/works/OL45392528W)
+- *Parcours d'un prix Nobel* (2006); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL31743009M), [source 2](https://openlibrary.org/works/OL24044911W)
+- *Photochemistry and photobiology* (1983); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL3170460M), [source 2](https://openlibrary.org/works/OL18857546W)
+- *Physical biology* (2008); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL16679142M), [source 2](https://openlibrary.org/books/OL51021888M), [source 3](https://openlibrary.org/works/OL18677652W)
+- *The Chemical bond* (1992); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL1549982M), [source 2](https://openlibrary.org/books/OL33464338M), [source 3](https://openlibrary.org/books/OL7329520M)
+- *Time's mysteries and miracles* (2005); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL16144685M), [source 2](https://openlibrary.org/works/OL5983468W)
 
 #### Popular science
 
@@ -4319,7 +4335,21 @@
 
 #### Unresolved candidates
 
+- *4d Visualization of Matter* (2014); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL28565826M), [source 2](https://openlibrary.org/books/OL48162342M), [source 3](https://openlibrary.org/works/OL21103142W)
+- *Advances in Laser Chemistry* (1978); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL27015092M), [source 2](https://openlibrary.org/works/OL19824541W)
 - *Age of Science* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q4691906)
+- *Beyond science* (2008); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL23393346M), [source 2](https://openlibrary.org/works/OL5983466W)
+- *Femtochemistry Vol. 1* (1994); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL49254704M), [source 2](https://openlibrary.org/works/OL36451094W)
+- *Femtochemistry Vol. 2* (1994); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL49253575M), [source 2](https://openlibrary.org/works/OL36450628W)
+- *Reflections on world affairs* (2015); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL31064968M), [source 2](https://openlibrary.org/works/OL23228983W)
+- *Reise Durch Die Zeit* (2006); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL12343752M), [source 2](https://openlibrary.org/works/OL5983467W)
+- *Reminiscences of Ahmed H. Zewail : Photons, Electrons, and What Else? : A Portrait from Close Range* (2018); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL49260960M), [source 2](https://openlibrary.org/books/OL49261275M), [source 3](https://openlibrary.org/works/OL36454174W)
+- *Ultrafast Phenomena IX* (2012); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL34373325M), [source 2](https://openlibrary.org/works/OL25616678W)
+- *Viaje a Traves del Tiempo Senderos Hacia El Premio Nobel Ciencia y Tecnologia* (2006); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL26158704M), [source 2](https://openlibrary.org/works/OL17568077W)
+- *Voyage Through Time* (2002); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL34609015M), [source 2](https://openlibrary.org/books/OL34620273M), [source 3](https://openlibrary.org/books/OL36721334M)
+- *Voyage through time* (2002); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL3601217M), [source 2](https://openlibrary.org/books/OL3707845M), [source 3](https://openlibrary.org/books/OL9196375M)
+- *ʻAṣr al-ʻilm* (2005); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL16380171M), [source 2](https://openlibrary.org/works/OL5983465W)
+- *زويل.. المدينة* (2016); author; unknown; relationship confidence 0.65; [source 1](https://openlibrary.org/books/OL58965085M), [source 2](https://openlibrary.org/works/OL43290809W)
 
 ### Akira Suzuki
 
@@ -4683,7 +4713,7 @@
 
 #### Technical works
 
-- *The molecular basis of evolution / Christian B. Anfinsen. - 1959* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q100995425)
+- *The molecular basis of evolution / Christian B. Anfinsen. - 1959* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q100995425)
 
 #### Popular science
 
@@ -5316,13 +5346,13 @@
 
 #### Memoir and essays
 
-- *Adventures in radioisotope research;* (unknown year); author; memoir; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51438211)
 
 #### Edited works
 
 
 #### Unresolved candidates
 
+- *Adventures in radioisotope research;* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51438211)
 
 ### Gerhard Ertl
 
@@ -5345,11 +5375,11 @@
 
 #### Technical works
 
-- *Molecular Spectra and Molecular Structure* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q117463374)
-- *Molecular Spectra and Molecular Structure IV. Constants of Diatomic Molecules* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q6895978)
-- *Molecular Spectra and Molecular Structure: III. Electronic Spectra and Electronic Structure of Polyatomic Molecules.* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q110615410)
-- *Molecular spectra and molecular structure: I,. Spectra of diatomic molecules* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q110616007)
-- *Molecular spectra and molecular structure: II,. Infrared and Raman spectra of polyatomic molecules* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q110615899)
+- *Molecular Spectra and Molecular Structure* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q117463374)
+- *Molecular Spectra and Molecular Structure IV. Constants of Diatomic Molecules* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q6895978)
+- *Molecular Spectra and Molecular Structure: III. Electronic Spectra and Electronic Structure of Polyatomic Molecules.* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q110615410)
+- *Molecular spectra and molecular structure: I,. Spectra of diatomic molecules* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q110616007)
+- *Molecular spectra and molecular structure: II,. Infrared and Raman spectra of polyatomic molecules* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q110615899)
 
 #### Popular science
 
@@ -5616,7 +5646,7 @@
 
 #### Technical works
 
-- *Phenomena, atoms and molecules: an attempt to interpret phenomena in terms of mechanisms or atomic and molecular interactions* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51517768)
+- *Phenomena, atoms and molecules: an attempt to interpret phenomena in terms of mechanisms or atomic and molecular interactions* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51517768)
 
 #### Popular science
 
@@ -5668,7 +5698,7 @@
 
 #### Technical works
 
-- *Lectures on theoretical and physical chemistry* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51424916)
+- *Lectures on theoretical and physical chemistry* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51424916)
 
 #### Popular science
 
@@ -5981,7 +6011,7 @@
 
 #### Unresolved candidates
 
-- *Crystalline enzymes / John Howard Northrop. -  2d ed. 1948* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q106582992)
+- *Crystalline enzymes / John Howard Northrop. - 2d ed. 1948* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q106582992)
 - *The chemistry and physiology of growth* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51455853)
 
 ### John Jumper
@@ -6006,7 +6036,7 @@
 
 #### Technical works
 
-- *Gaussian* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q901177)
+- *Gaussian* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q901177)
 
 #### Popular science
 
@@ -6285,7 +6315,7 @@
 
 #### Technical works
 
-- *Treatise on Radioactivity* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q24041517)
+- *Treatise on Radioactivity* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q24041517)
 
 #### Popular science
 
@@ -6375,13 +6405,13 @@
 
 #### Memoir and essays
 
-- *Ḍarūrat al-ʻilm: dirāsāt fī al-ʻilm wa-al-ʻulamāʼ* (1999); author; essays; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q121437914), [source 2](https://www.wikidata.org/wiki/Q121438229)
 
 #### Edited works
 
 
 #### Unresolved candidates
 
+- *Ḍarūrat al-ʻilm: dirāsāt fī al-ʻilm wa-al-ʻulamāʼ* (1999); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q121437914), [source 2](https://www.wikidata.org/wiki/Q121438229)
 
 ### Melvin Calvin
 
@@ -6532,7 +6562,7 @@
 
 #### Technical works
 
-- *Introduction to Reticular Chemistry* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q136459342)
+- *Introduction to Reticular Chemistry* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q136459342)
 
 #### Popular science
 
@@ -6620,7 +6650,7 @@
 
 #### Technical works
 
-- *A Stanford professor's career in biochemistry, science politics, and the biotechnology industry :* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51427359)
+- *A Stanford professor's career in biochemistry, science politics, and the biotechnology industry :* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51427359)
 
 #### Popular science
 
@@ -6647,7 +6677,7 @@
 
 #### Edited works
 
-- *Annual Review of Biochemistry* (unknown year); editor; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q567356)
+- *Annual Review of Biochemistry* (unknown year); editor; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q567356)
 
 #### Unresolved candidates
 
@@ -6673,7 +6703,7 @@
 
 #### Technical works
 
-- *Principles of Polymer Chemistry* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q67430650)
+- *Principles of Polymer Chemistry* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q67430650)
 
 #### Popular science
 
@@ -7123,7 +7153,7 @@
 
 #### Edited works
 
-- *Annual Review of Biochemistry* (unknown year); editor; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q567356)
+- *Annual Review of Biochemistry* (unknown year); editor; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q567356)
 
 #### Unresolved candidates
 
@@ -7311,13 +7341,13 @@
 
 #### Memoir and essays
 
-- *Essays biographical and chemical* (unknown year); author; essays; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51469907)
 
 #### Edited works
 
 
 #### Unresolved candidates
 
+- *Essays biographical and chemical* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51469907)
 - *Q131621812* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q131621812)
 
 ### Stanford Moore
@@ -7375,7 +7405,7 @@
 
 #### Technical works
 
-- *Immunochemistry; the application of the principles of physical chemistry to the study of the biological antibodies* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51493651)
+- *Immunochemistry; the application of the principles of physical chemistry to the study of the biological antibodies* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51493651)
 
 #### Popular science
 
@@ -7597,7 +7627,7 @@
 
 #### Technical works
 
-- *third law of thermodynamics* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q29166)
+- *third law of thermodynamics* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q29166)
 
 #### Popular science
 
@@ -8164,7 +8194,7 @@
 
 #### Technical works
 
-- *A monograph of the genus Hydrangea* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q62065367)
+- *A monograph of the genus Hydrangea* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q62065367)
 
 #### Popular science
 
@@ -8954,7 +8984,7 @@
 
 #### Technical works
 
-- *Cellular basis of behavior : an introduction to behavioral neurobiology / Eric R. Kandel. - 1976* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q104030260)
+- *Cellular basis of behavior : an introduction to behavioral neurobiology / Eric R. Kandel. - 1976* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q104030260)
 
 #### Popular science
 
@@ -8964,7 +8994,7 @@
 
 #### Edited works
 
-- *Handbook of Physiology. Section 1: The nervous system; 1: Cellular biology of neurons / ed. Erich R. Kandel. - 1977* (unknown year); editor; reference; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q105627525)
+- *Handbook of Physiology. Section 1: The nervous system; 1: Cellular biology of neurons / ed. Erich R. Kandel. - 1977* (unknown year); editor; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q105627525)
 
 #### Unresolved candidates
 
@@ -9348,7 +9378,7 @@
 
 #### Technical works
 
-- *Neural Darwinism – The Theory of Neuronal Group Selection* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q20972676)
+- *Neural Darwinism – The Theory of Neuronal Group Selection* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q20972676)
 
 #### Popular science
 
@@ -9753,7 +9783,7 @@
 
 #### Technical works
 
-- *Lectures on conditioned reflexes / Ivan Petrovich Pavlov. - V. 1 - 1928* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q106583508)
+- *Lectures on conditioned reflexes / Ivan Petrovich Pavlov. - V. 1 - 1928* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q106583508)
 
 #### Popular science
 
@@ -9880,7 +9910,7 @@
 
 #### Technical works
 
-- *Molecular Biology of the Gene* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q29458433)
+- *Molecular Biology of the Gene* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q29458433)
 
 #### Popular science
 
@@ -9987,11 +10017,11 @@
 
 #### Technical works
 
-- *Physiology and biochemistry in modern medicine* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51425995)
-- *Physiology and biochemistry in modern medicine* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51425999)
-- *Physiology and biochemistry in modern medicine* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51425880)
-- *Physiology and biochemistry in modern medicine* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51425877)
-- *Recent advances in physiology and biochemistry* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51524419)
+- *Physiology and biochemistry in modern medicine* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51425995)
+- *Physiology and biochemistry in modern medicine* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51425999)
+- *Physiology and biochemistry in modern medicine* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51425880)
+- *Physiology and biochemistry in modern medicine* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51425877)
+- *Recent advances in physiology and biochemistry* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51524419)
 
 #### Popular science
 
@@ -10105,7 +10135,7 @@
 
 #### Technical works
 
-- *Tatum, Edward Lawrie (1909-1975), biochemical geneticist and Nobel Laureate* (unknown year); author; reference; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q103881781)
+- *Tatum, Edward Lawrie (1909-1975), biochemical geneticist and Nobel Laureate* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q103881781)
 
 #### Popular science
 
@@ -11301,8 +11331,8 @@
 
 #### Technical works
 
-- *Laboratory manual of general microbiology, with special reference to the microorganisms of the soil* (unknown year); author; reference; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51497824)
-- *Principles of soil microbiology* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51522099)
+- *Laboratory manual of general microbiology, with special reference to the microorganisms of the soil* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51497824)
+- *Principles of soil microbiology* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51522099)
 
 #### Popular science
 
@@ -11410,8 +11440,8 @@
 
 #### Technical works
 
-- *Introduction to Creation by Evolution* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q130287660)
-- *Lectures on the method of science* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51498750)
+- *Introduction to Creation by Evolution* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q130287660)
+- *Lectures on the method of science* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51498750)
 
 #### Popular science
 
@@ -11835,9 +11865,9 @@
 
 #### Technical works
 
-- *A critique of the theory of evolution* (unknown year); author; technical_monograph; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51402729)
-- *The development of the frog's egg: an introduction to experimental embryology* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51464760)
-- *The development of the frog's egg; an introduction to experimental embryology* (unknown year); author; textbook; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51424530)
+- *A critique of the theory of evolution* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51402729)
+- *The development of the frog's egg: an introduction to experimental embryology* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51464760)
+- *The development of the frog's egg; an introduction to experimental embryology* (unknown year); author; unknown; relationship confidence 0.65; [source 1](https://www.wikidata.org/wiki/Q51424530)
 
 #### Popular science
 

@@ -2,7 +2,7 @@
 
 ## Generated At
 
-`2026-07-30T13:42:03.613798+00:00`
+`2026-07-30T16:00:29.216277+00:00`
 
 ## Laureates By Category
 
@@ -18,7 +18,7 @@
 
 ## Laureate Work Distribution
 
-`{'zero': 430, 'one': 100, 'multiple': 128}`
+`{'zero': 427, 'one': 100, 'multiple': 131}`
 
 ## Verified Works
 
@@ -26,27 +26,27 @@
 
 ## Unreviewed Candidates
 
-`899`
+`929`
 
 ## Source Contribution Counts
 
-`{'openalex': 1, 'openlibrary': 30, 'wikidata': 963, 'wikipedia': 9}`
+`{'openalex': 1, 'openlibrary': 115, 'wikidata': 963, 'wikipedia': 11}`
 
 ## Duplicate Edition Clusters
 
-`2`
+`7`
 
 ## Classification Distribution
 
-`{'essays': 2, 'memoir': 4, 'reference': 11, 'technical_monograph': 39, 'textbook': 14, 'unknown': 805}`
+`{'series': 13, 'unknown': 903}`
 
 ## Technical Works By Category Decade
 
-`{'chemistry:unknown': 17, 'medicine:unknown': 19, 'physics:1870s': 1, 'physics:1930s': 2, 'physics:1940s': 1, 'physics:1950s': 2, 'physics:1960s': 2, 'physics:unknown': 21}`
+`{'chemistry:1970s': 1, 'chemistry:1980s': 1, 'chemistry:1990s': 4, 'chemistry:2000s': 4, 'chemistry:unknown': 18, 'medicine:unknown': 19, 'physics:1870s': 1, 'physics:1930s': 2, 'physics:1940s': 1, 'physics:1950s': 2, 'physics:1960s': 2, 'physics:unknown': 20}`
 
 ## Review Progress
 
-`{'needs_review': 899, 'rejected': 9}`
+`{'needs_review': 929, 'rejected': 11}`
 
 ## Failed Pipeline Runs
 

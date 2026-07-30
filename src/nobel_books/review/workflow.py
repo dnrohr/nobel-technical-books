@@ -42,7 +42,7 @@ def review_queue_items(session: Session) -> list[dict[str, object]]:
                 "review_key": contribution_review_key(laureate, work, contribution.role),
                 "nobel_api_id": laureate.nobel_api_id,
                 "laureate_name": laureate.display_name,
-                "candidate_title": work.preferred_title,
+                "candidate_title": " ".join(work.preferred_title.split()),
                 "candidate_role": contribution.role,
                 "classification": work.work_type,
                 "technicality_score": work.technicality_score,
@@ -59,7 +59,7 @@ def export_review_queue(session: Session, path: Path) -> int:
     items = review_queue_items(session)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.writer(handle)
+        writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(
             [
                 "review_key",

@@ -31,9 +31,15 @@ from nobel_books.pipeline.scholarly import source_limitations_document
 def _write_csv(path: Path, fields: list[str], rows: list[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer = csv.DictWriter(handle, fieldnames=fields, lineterminator="\n")
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(
+            {
+                field: " ".join(value.split()) if isinstance(value, str) else value
+                for field, value in row.items()
+            }
+            for row in rows
+        )
 
 
 def _editions(session: Session, work_id: int) -> list[Edition]:
@@ -400,6 +406,7 @@ def export_json(session: Session, path: Path) -> int:
     path.write_text(
         json.dumps(document, ensure_ascii=False, indent=2, sort_keys=True),
         encoding="utf-8",
+        newline="\n",
     )
     return len(document["laureates"])  # type: ignore[arg-type]
 
@@ -475,7 +482,7 @@ def export_markdown(session: Session, path: Path) -> int:
                         f"[source {index + 1}]({url})" for index, url in enumerate(urls[:3])
                     )
                     lines.append(
-                        f"- *{work.preferred_title}* ({year}); "
+                        f"- *{' '.join(work.preferred_title.split())}* ({year}); "
                         f"{contribution.role}; {work.work_type}; "
                         f"relationship confidence "
                         f"{contribution.relationship_confidence:.2f}"
@@ -484,7 +491,7 @@ def export_markdown(session: Session, path: Path) -> int:
                     count += 1
                 lines.append("")
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines), encoding="utf-8")
+    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
     return count
 
 
@@ -504,6 +511,7 @@ def export_limitations(json_path: Path, markdown_path: Path) -> None:
     json_path.write_text(
         json.dumps(document, ensure_ascii=False, indent=2, sort_keys=True),
         encoding="utf-8",
+        newline="\n",
     )
     lines = [
         "# Dataset limitations",
@@ -517,7 +525,7 @@ def export_limitations(json_path: Path, markdown_path: Path) -> None:
         str(document["redistribution"]),
         "",
     ]
-    markdown_path.write_text("\n".join(lines), encoding="utf-8")
+    markdown_path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
 
 
 def coverage_document(
@@ -628,11 +636,12 @@ def export_coverage(session: Session, json_path: Path, markdown_path: Path) -> N
     json_path.write_text(
         json.dumps(document, ensure_ascii=False, indent=2, sort_keys=True),
         encoding="utf-8",
+        newline="\n",
     )
     lines = ["# Coverage Report", ""]
     for key, value in document.items():
         lines.extend([f"## {key.replace('_', ' ').title()}", "", f"`{value}`", ""])
-    markdown_path.write_text("\n".join(lines), encoding="utf-8")
+    markdown_path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
 
 
 def export_all(session: Session, output_dir: Path) -> dict[str, int]:

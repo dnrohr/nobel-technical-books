@@ -1,6 +1,5 @@
 """Command-line interface."""
 
-import os
 import sys
 from pathlib import Path
 from typing import Annotated
@@ -24,7 +23,7 @@ from nobel_books.classification.classifier import (
     load_rules,
     score_relationships,
 )
-from nobel_books.config import get_settings
+from nobel_books.config import get_credential, get_settings
 from nobel_books.db import database_status, make_engine, upgrade_database
 from nobel_books.errors import NobelBooksError
 from nobel_books.export.exporters import (
@@ -288,12 +287,11 @@ def discover(
                     f"Open Library: verified_authors={openlibrary_summary.authors_verified}, "
                     f"review_candidates={review_count}, works={openlibrary_summary.works}, "
                     f"editions={openlibrary_summary.editions}, "
-                    f"fetches={openlibrary_summary.fetches}"
+                    f"fetches={openlibrary_summary.fetches}, "
+                    f"failures={openlibrary_summary.failures}"
                 )
             elif source_name == "google-books":
-                api_key = (
-                    os.environ.get(source.api_key_env) if source.api_key_env is not None else None
-                )
+                api_key = get_credential(source.api_key_env)
                 google_adapter = GoogleBooksAdapter(
                     source.base_url,
                     settings.project.user_agent,
@@ -328,7 +326,7 @@ def discover(
                 openalex_adapter = OpenAlexAdapter(
                     source.base_url,
                     settings.project.contact_email,
-                    api_key=(os.environ.get(source.api_key_env) if source.api_key_env else None),
+                    api_key=get_credential(source.api_key_env),
                     include_xpac=source.include_xpac,
                     requests_per_second=source.requests_per_second,
                     page_size=source.page_size,
@@ -349,9 +347,7 @@ def discover(
                     f"books={scholarly.openalex_books}, fetches={scholarly.fetches}"
                 )
             elif source_name == "crossref":
-                contact = (
-                    os.environ.get(source.mailto_env) if source.mailto_env else None
-                ) or settings.project.contact_email
+                contact = get_credential(source.mailto_env) or settings.project.contact_email
                 if not contact:
                     typer.echo("Error: contact email is required for Crossref.", err=True)
                     raise typer.Exit(code=1)
