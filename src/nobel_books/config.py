@@ -31,6 +31,8 @@ class SourceConfig(BaseModel):
     requests_per_second: float = 1.0
     page_size: int = 100
     max_authors_per_run: int = 10
+    max_results_per_query: int = 400
+    api_key_env: str | None = None
 
 
 class Settings(BaseSettings):

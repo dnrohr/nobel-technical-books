@@ -1,5 +1,6 @@
 """Command-line interface."""
 
+import os
 import sys
 from pathlib import Path
 from typing import Annotated
@@ -9,6 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from nobel_books import __version__
+from nobel_books.adapters.google_books import GoogleBooksAdapter
 from nobel_books.adapters.nobel import NobelApiAdapter
 from nobel_books.adapters.openlibrary import OpenLibraryAdapter
 from nobel_books.adapters.wikidata import WikidataBookAdapter, WikidataIdentityAdapter
@@ -19,6 +21,7 @@ from nobel_books.errors import NobelBooksError
 from nobel_books.logging import configure_logging
 from nobel_books.models.database import Laureate
 from nobel_books.pipeline.discovery import discover_wikidata_candidates
+from nobel_books.pipeline.google_books import discover_google_books
 from nobel_books.pipeline.identities import export_identity_review, resolve_identities
 from nobel_books.pipeline.laureates import sync_laureates
 from nobel_books.pipeline.openlibrary import (
@@ -188,11 +191,12 @@ def discover(
 ) -> None:
     """Discover source-native book candidates without canonical merging."""
 
-    if source_name not in {"wikidata", "openlibrary"}:
+    if source_name not in {"wikidata", "openlibrary", "google-books"}:
         typer.echo(f"Error: source is not implemented: {source_name}", err=True)
         raise typer.Exit(code=1)
     settings = get_settings()
-    source = settings.sources.get(source_name)
+    config_key = source_name.replace("-", "_")
+    source = settings.sources.get(config_key)
     if source is None or not source.enabled or source.base_url is None:
         typer.echo(f"Error: {source_name} source is not enabled and configured.", err=True)
         raise typer.Exit(code=1)
@@ -213,7 +217,7 @@ def discover(
                     f"works={summary.works}, editions={summary.editions}, "
                     f"assertions={summary.assertions}, batches={summary.batches}"
                 )
-            else:
+            elif source_name == "openlibrary":
                 if not settings.project.contact_email:
                     typer.echo(
                         "Error: project.contact_email is required for Open Library.",
@@ -241,6 +245,32 @@ def discover(
                     f"review_candidates={review_count}, works={openlibrary_summary.works}, "
                     f"editions={openlibrary_summary.editions}, "
                     f"fetches={openlibrary_summary.fetches}"
+                )
+            else:
+                api_key = (
+                    os.environ.get(source.api_key_env) if source.api_key_env is not None else None
+                )
+                google_adapter = GoogleBooksAdapter(
+                    source.base_url,
+                    settings.project.user_agent,
+                    api_key=api_key,
+                    requests_per_second=source.requests_per_second,
+                    page_size=source.page_size,
+                    max_results_per_query=source.max_results_per_query,
+                )
+                google_summary = discover_google_books(
+                    session,
+                    google_adapter,
+                    RawResponseCache(),
+                    max_authors=source.max_authors_per_run,
+                    nobel_api_id=laureate_id,
+                )
+                message = (
+                    f"Google Books: queries={google_summary.queries}, "
+                    f"volumes={google_summary.volumes}, "
+                    f"new_volumes={google_summary.new_volumes}, "
+                    f"ambiguous={google_summary.ambiguous_relationships}, "
+                    f"fetches={google_summary.fetches}"
                 )
     finally:
         engine.dispose()

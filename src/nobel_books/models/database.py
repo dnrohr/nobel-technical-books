@@ -227,3 +227,21 @@ class SourceAuthorCandidate(Base):
     evidence_json: Mapped[dict[str, object]] = mapped_column(JSON)
     source_fetch_id: Mapped[int | None] = mapped_column(ForeignKey("source_fetch.id"))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class DiscoveryQuery(Base):
+    """A logged controlled query variant used for candidate recall."""
+
+    __tablename__ = "discovery_query"
+    __table_args__ = (
+        UniqueConstraint("laureate_id", "source", "query_text", name="uq_discovery_query"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    laureate_id: Mapped[int] = mapped_column(ForeignKey("laureate.id"), index=True)
+    source: Mapped[str] = mapped_column(String(50), index=True)
+    query_text: Mapped[str] = mapped_column(Text)
+    variant_type: Mapped[str] = mapped_column(String(30))
+    status: Mapped[str] = mapped_column(String(20))
+    result_count: Mapped[int] = mapped_column(Integer, default=0)
+    executed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

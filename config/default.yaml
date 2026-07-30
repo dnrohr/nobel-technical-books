@@ -25,5 +25,13 @@ sources:
     requests_per_second: 0.5
     page_size: 50
     max_authors_per_run: 10
+  google_books:
+    enabled: true
+    base_url: "https://www.googleapis.com/books/v1"
+    requests_per_second: 2.0
+    page_size: 40
+    max_authors_per_run: 5
+    max_results_per_query: 400
+    api_key_env: "GOOGLE_BOOKS_API_KEY"
 
 log_level: "INFO"
