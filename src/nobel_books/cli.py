@@ -52,6 +52,7 @@ from nobel_books.pipeline.scholarly import (
 from nobel_books.pipeline.wikipedia import discover_wikipedia
 from nobel_books.reconciliation.editions import reconcile_editions
 from nobel_books.reconciliation.works import cluster_works
+from nobel_books.review.ratings import export_rating_template, import_ratings
 from nobel_books.review.workflow import (
     export_review_queue,
     import_review_decisions,
@@ -65,6 +66,7 @@ reconcile_app = typer.Typer(help="Reconcile normalized source records.")
 review_app = typer.Typer(help="Export and import durable review decisions.")
 export_app = typer.Typer(help="Export bibliography artifacts.")
 audit_app = typer.Typer(help="Audit coverage, regressions, and dataset drift.")
+ratings_app = typer.Typer(help="Import manually reviewed retailer ratings.")
 app.add_typer(db_app, name="db")
 app.add_typer(laureates_app, name="laureates")
 app.add_typer(identities_app, name="identities")
@@ -72,6 +74,7 @@ app.add_typer(reconcile_app, name="reconcile")
 app.add_typer(review_app, name="review")
 app.add_typer(export_app, name="export")
 app.add_typer(audit_app, name="audit")
+app.add_typer(ratings_app, name="ratings")
 
 
 def version_callback(value: bool) -> None:
@@ -224,6 +227,10 @@ def discover(
         str | None,
         typer.Option("--laureate-id", help="Limit discovery to one Nobel API ID."),
     ] = None,
+    refresh: Annotated[
+        bool,
+        typer.Option("--refresh", help="Reprocess completed laureates instead of continuing."),
+    ] = False,
 ) -> None:
     """Discover source-native book candidates without canonical merging."""
 
@@ -280,6 +287,7 @@ def discover(
                     RawResponseCache(),
                     max_authors=source.max_authors_per_run,
                     nobel_api_id=laureate_id,
+                    refresh=refresh,
                 )
                 review_path = Path("data/exports/openlibrary_identity_review.csv")
                 review_count = export_openlibrary_identity_review(session, review_path)
@@ -306,6 +314,7 @@ def discover(
                     RawResponseCache(),
                     max_authors=source.max_authors_per_run,
                     nobel_api_id=laureate_id,
+                    refresh=refresh,
                 )
                 message = (
                     f"Google Books: queries={google_summary.queries}, "
@@ -380,6 +389,7 @@ def discover(
                     headings=source.bibliography_headings,
                     max_authors=source.max_authors_per_run,
                     nobel_api_id=laureate_id,
+                    refresh=refresh,
                 )
                 message = (
                     f"Wikipedia: pages={wikipedia.pages_with_sections}, "
@@ -503,6 +513,38 @@ def review_import(path: Path) -> None:
     finally:
         engine.dispose()
     typer.echo(f"Imported {count} review decision(s) from {path}.")
+
+
+@ratings_app.command("export-template")
+def ratings_export_template(
+    output: Annotated[Path, typer.Option("--output", help="Ratings CSV template path.")] = Path(
+        "data/exports/amazon_ratings_review.csv"
+    ),
+) -> None:
+    """Export ISBN-bearing editions for optional manual Amazon review."""
+
+    settings = get_settings()
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            count = export_rating_template(session, output)
+    finally:
+        engine.dispose()
+    typer.echo(f"Exported {count} edition row(s) to {output}.")
+
+
+@ratings_app.command("import")
+def ratings_import(path: Path) -> None:
+    """Import reviewed Amazon rating observations without scraping."""
+
+    settings = get_settings()
+    engine = make_engine(settings.project.database_url)
+    try:
+        with Session(engine) as session:
+            count = import_ratings(session, path)
+    finally:
+        engine.dispose()
+    typer.echo(f"Imported {count} Amazon rating observation(s) from {path}.")
 
 
 @review_app.command("serve")

@@ -22,10 +22,12 @@ from nobel_books.models.database import (
     Laureate,
     PipelineRun,
     PrizeAward,
+    RetailRatingObservation,
     SourceFetch,
     SourceRecord,
 )
 from nobel_books.pipeline.scholarly import source_limitations_document
+from nobel_books.review.ratings import amazon_search_url
 
 
 def _write_csv(path: Path, fields: list[str], rows: list[dict[str, object]]) -> None:
@@ -50,6 +52,29 @@ def _editions(session: Session, work_id: int) -> list[Edition]:
             .order_by(Edition.publication_year, Edition.title)
         ).all()
     )
+
+
+def _latest_rating(session: Session, edition_id: int) -> RetailRatingObservation | None:
+    return session.scalar(
+        select(RetailRatingObservation)
+        .where(RetailRatingObservation.edition_id == edition_id)
+        .order_by(RetailRatingObservation.observed_at.desc())
+    )
+
+
+def _rating_item(rating: RetailRatingObservation | None) -> dict[str, object] | None:
+    if rating is None:
+        return None
+    return {
+        "retailer": rating.retailer,
+        "marketplace": rating.marketplace,
+        "asin": rating.product_id,
+        "stars": rating.average_rating,
+        "review_count": rating.review_count,
+        "observed_at": rating.observed_at.isoformat(),
+        "source_url": rating.source_url,
+        "match_confidence": rating.match_confidence,
+    }
 
 
 def _record_sources(
@@ -191,6 +216,7 @@ def export_editions_csv(session: Session, path: Path) -> int:
     rows: list[dict[str, object]] = []
     editions = session.scalars(select(Edition).order_by(Edition.id)).all()
     for edition in editions:
+        rating = _latest_rating(session, edition.id)
         records = session.scalars(
             select(SourceRecord)
             .join(
@@ -221,6 +247,14 @@ def export_editions_csv(session: Session, path: Path) -> int:
                 "source_urls": "|".join(
                     sorted(record.source_url for record in records if record.source_url)
                 ),
+                "amazon_search_url": amazon_search_url(edition),
+                "amazon_asin": rating.product_id if rating else "",
+                "amazon_marketplace": rating.marketplace if rating else "",
+                "amazon_stars": rating.average_rating if rating else "",
+                "amazon_review_count": rating.review_count if rating else "",
+                "amazon_observed_at": rating.observed_at.isoformat() if rating else "",
+                "amazon_source_url": rating.source_url if rating else "",
+                "amazon_match_confidence": rating.match_confidence if rating else "",
             }
         )
     fields = (
@@ -241,6 +275,14 @@ def export_editions_csv(session: Session, path: Path) -> int:
             "source_ids",
             "confidence",
             "source_urls",
+            "amazon_search_url",
+            "amazon_asin",
+            "amazon_marketplace",
+            "amazon_stars",
+            "amazon_review_count",
+            "amazon_observed_at",
+            "amazon_source_url",
+            "amazon_match_confidence",
         ]
     )
     _write_csv(path, fields, rows)
@@ -353,6 +395,8 @@ def bibliography_document(session: Session) -> dict[str, object]:
                             "isbn13": edition.isbn13,
                             "doi": edition.doi,
                             "oclc": edition.oclc,
+                            "amazon_search_url": amazon_search_url(edition),
+                            "amazon_rating": _rating_item(_latest_rating(session, edition.id)),
                         }
                         for edition in editions
                     ],

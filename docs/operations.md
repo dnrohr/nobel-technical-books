@@ -40,6 +40,27 @@ UI has no authentication; do not
 bind it to a public or shared interface without adding an authenticated reverse
 proxy. Both interfaces write the same durable `ManualOverride` rows.
 
+## Optional Amazon ratings
+
+The explorer generates an Amazon search link from an edition's ISBN (or title
+when no ISBN is available). It does not scrape Amazon. For a curated ratings
+snapshot:
+
+```bash
+uv run nobel-books db upgrade
+uv run nobel-books ratings export-template
+# Manually review and complete data/exports/amazon_ratings_review.csv
+uv run nobel-books ratings import data/exports/amazon_ratings_review.csv
+uv run nobel-books export all
+```
+
+Rows without an ASIN are skipped. Imported rows must identify an existing edition
+by ID or ISBN and provide an Amazon marketplace, direct HTTPS product URL,
+0–5 star value, nonnegative review count, ISO 8601 observation timestamp,
+0–1 match confidence, and optional reviewer. Ratings are edition- and
+marketplace-specific snapshots rather than permanent properties of a canonical
+work.
+
 Run `nobel-books audit run` after a full pipeline. Promote an audit JSON file to
 an accepted baseline only after human review, then pass that file with
 `--previous` on later runs. Exit status 2 means a verified record was removed or

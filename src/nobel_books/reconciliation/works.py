@@ -24,6 +24,7 @@ from nobel_books.models.database import (
     WorkSourceRecord,
 )
 from nobel_books.normalization.titles import normalize_title
+from nobel_books.pipeline.discovery import is_valid_human_title
 from nobel_books.reconciliation.editions import UnionFind, _strings
 
 
@@ -150,6 +151,7 @@ def _upsert_work(
                 value
                 for key in ("title", "itemLabel")
                 for value in _strings(dict(record.raw_json).get(key))
+                if is_valid_human_title(value)
             ),
             None,
         )
@@ -164,6 +166,8 @@ def _upsert_work(
                 )
             )
     for edition in group.editions:
+        if not is_valid_human_title(edition.title):
+            continue
         candidates.append(
             (
                 5,
@@ -285,6 +289,14 @@ def cluster_works(
     session.execute(delete(WorkRelation))
     created: list[tuple[CanonicalWork, WorkGroup]] = []
     for group in sorted(groups.values(), key=lambda item: sorted(item.tokens)):
+        has_valid_title = any(
+            is_valid_human_title(value)
+            for record in group.source_records
+            for key in ("title", "itemLabel")
+            for value in _strings(dict(record.raw_json).get(key))
+        ) or any(is_valid_human_title(edition.title) for edition in group.editions)
+        if not has_valid_title:
+            continue
         key = hashlib.sha256("\n".join(sorted(group.tokens)).encode()).hexdigest()
         work = _upsert_work(session, group, key)
         created.append((work, group))

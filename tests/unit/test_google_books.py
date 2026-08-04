@@ -106,7 +106,7 @@ def test_controlled_queries_pagination_deduplication_and_ambiguity(tmp_path: Pat
         "initials_and_family",
     ]
     assert route.call_count == 6
-    assert query_count == 3
+    assert query_count == 4
     assert summary.volumes == 6
     assert summary.new_volumes == 2
     assert len(records) == 2

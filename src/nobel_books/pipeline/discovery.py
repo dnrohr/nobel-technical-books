@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import re
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -33,6 +34,16 @@ class DiscoverySummary:
     works: int = 0
     editions: int = 0
     assertions: int = 0
+
+
+_WIKIDATA_ENTITY_ID = re.compile(r"^Q\d+$", re.IGNORECASE)
+
+
+def is_valid_human_title(value: str | None) -> bool:
+    """Return whether a source value is a usable human-readable book title."""
+
+    title = " ".join((value or "").split())
+    return bool(title) and not _WIKIDATA_ENTITY_ID.fullmatch(title)
 
 
 def _record_fetch(
@@ -122,7 +133,6 @@ def _parse_item(
     item_qid = qid_from_uri(rows[0]["item"].value)
     raw: dict[str, list[dict[str, str]]] = {}
     field_map = {
-        "title": "itemLabel",
         "instance": "instance",
         "instance_label": "instanceLabel",
         "role": "role",
@@ -134,6 +144,10 @@ def _parse_item(
         "edition_of": "editionOf",
         "edition_of_label": "editionOfLabel",
     }
+    title_values = _group_values(rows, "explicitItemLabel") or _group_values(rows, "itemLabel")
+    title_values = [value for value in title_values if is_valid_human_title(value.get("value"))]
+    if title_values:
+        raw["title"] = title_values
     for predicate, binding_key in field_map.items():
         values = _group_values(rows, binding_key)
         if values:

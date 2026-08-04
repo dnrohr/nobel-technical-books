@@ -75,7 +75,7 @@ WHERE {{
 def candidate_query(person_qids: Sequence[str]) -> str:
     values = " ".join(f"wd:{qid}" for qid in person_qids)
     return f"""
-SELECT DISTINCT ?person ?item ?itemLabel ?instance ?instanceLabel ?role
+SELECT DISTINCT ?person ?item ?itemLabel ?explicitItemLabel ?instance ?instanceLabel ?role
   ?publicationDate ?isbn13 ?isbn10 ?oclc ?editionOf ?editionOfLabel
 WHERE {{
   VALUES ?person {{ {values} }}
@@ -89,6 +89,10 @@ WHERE {{
     BIND("editor" AS ?role)
   }}
   OPTIONAL {{ ?item wdt:P31 ?instance . }}
+  OPTIONAL {{
+    ?item rdfs:label ?explicitItemLabel .
+    FILTER(LANG(?explicitItemLabel) = "en")
+  }}
   OPTIONAL {{ ?item wdt:P577 ?publicationDate . }}
   OPTIONAL {{ ?item wdt:P212 ?isbn13 . }}
   OPTIONAL {{ ?item wdt:P957 ?isbn10 . }}

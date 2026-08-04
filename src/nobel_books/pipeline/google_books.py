@@ -20,6 +20,7 @@ from nobel_books.models.database import (
 )
 from nobel_books.normalization.names import normalize_name
 from nobel_books.pipeline.discovery import _upsert_assertion
+from nobel_books.pipeline.progress import mark_laureate_progress, pending_laureates
 
 
 @dataclass(frozen=True)
@@ -181,11 +182,15 @@ def discover_google_books(
     *,
     max_authors: int,
     nobel_api_id: str | None = None,
+    refresh: bool = False,
 ) -> GoogleBooksSummary:
-    query = select(Laureate).order_by(Laureate.id)
-    if nobel_api_id is not None:
-        query = query.where(Laureate.nobel_api_id == nobel_api_id)
-    laureates = session.scalars(query.limit(max_authors)).all()
+    laureates = pending_laureates(
+        session,
+        "google_books",
+        max_authors,
+        nobel_api_id=nobel_api_id,
+        refresh=refresh,
+    )
     run = PipelineRun(
         profile="discover-google-books",
         status=PipelineStatus.RUNNING,
@@ -196,6 +201,7 @@ def discover_google_books(
     summary = GoogleBooksSummary(laureates=len(laureates))
     try:
         for laureate in laureates:
+            laureate_volume_count = 0
             for variant in author_query_variants(laureate):
                 summary.queries += 1
                 query_log = _log_query(session, laureate, variant)
@@ -206,6 +212,7 @@ def discover_google_books(
                         source_fetch = _record_fetch(session, run, fetched, cache)
                         for volume in fetched.response.items:
                             summary.volumes += 1
+                            laureate_volume_count += 1
                             seen_for_query.add(volume.id)
                             created, count, ambiguous = _persist_volume(
                                 session,
@@ -224,9 +231,18 @@ def discover_google_books(
                     summary.failures += 1
                     summary.stopped_early = True
                     summary.error_message = str(exc)
+                    mark_laureate_progress(session, laureate, "google_books", "failed")
                     break
                 query_log.status = "succeeded"
                 query_log.result_count = len(seen_for_query)
+            if not summary.stopped_early:
+                mark_laureate_progress(
+                    session,
+                    laureate,
+                    "google_books",
+                    "succeeded",
+                    result_count=laureate_volume_count,
+                )
             if summary.stopped_early:
                 break
         run.status = PipelineStatus.FAILED if summary.stopped_early else PipelineStatus.SUCCEEDED

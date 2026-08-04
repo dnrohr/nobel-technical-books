@@ -196,3 +196,18 @@ actions write decisions through the same manual-override function as CSV import.
 The full CLI remains usable without
 WorldCat credentials or a running UI. See [docs/operations.md](docs/operations.md)
 for deployment, audit-baseline, credential, and recovery guidance.
+
+## Optional Amazon links and ratings
+
+The explorer provides a non-affiliate Amazon search link for each edition. Amazon
+ratings are never scraped. To add a manually verified snapshot, export a review
+template, fill in the ASIN, stars, review count, observation timestamp, direct
+Amazon URL, match confidence, and reviewer, then import it:
+
+```bash
+uv run nobel-books ratings export-template
+uv run nobel-books ratings import data/exports/amazon_ratings_review.csv
+```
+
+Ratings are stored per edition, marketplace, ASIN, and observation time. The
+explorer and JSON/edition CSV exports show the newest observation and its date.

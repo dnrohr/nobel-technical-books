@@ -280,6 +280,34 @@ class Edition(Base):
     identifier_issues: Mapped[list[dict[str, object]]] = mapped_column(JSON)
 
 
+class RetailRatingObservation(Base):
+    """A manually reviewed, time-stamped retailer rating for one edition."""
+
+    __tablename__ = "retail_rating_observation"
+    __table_args__ = (
+        UniqueConstraint(
+            "edition_id",
+            "retailer",
+            "marketplace",
+            "product_id",
+            "observed_at",
+            name="uq_retail_rating_observation",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    edition_id: Mapped[int] = mapped_column(ForeignKey("edition.id"), index=True)
+    retailer: Mapped[str] = mapped_column(String(30), index=True)
+    marketplace: Mapped[str] = mapped_column(String(100), index=True)
+    product_id: Mapped[str] = mapped_column(String(30), index=True)
+    average_rating: Mapped[float] = mapped_column(Float)
+    review_count: Mapped[int] = mapped_column(Integer)
+    observed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    source_url: Mapped[str] = mapped_column(Text)
+    match_confidence: Mapped[float] = mapped_column(Float)
+    reviewer: Mapped[str | None] = mapped_column(String(200))
+
+
 class EditionSourceRecord(Base):
     """Membership of a source-native record in a reconciled edition."""
 

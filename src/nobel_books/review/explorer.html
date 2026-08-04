@@ -15,7 +15,7 @@
     body { margin: 0; color: var(--ink); background: var(--paper);
       font: 15px/1.5 Inter, ui-sans-serif, system-ui, sans-serif; }
     button, input, select { font: inherit; }
-    header { color: #f9f7ef; background: var(--green); padding: 2rem clamp(1rem,4vw,4rem) 3rem;
+    header { color: #f9f7ef; background: var(--green); padding: 2rem clamp(1rem,4vw,4rem);
       position: relative; overflow: hidden; }
     header::after { content:""; position:absolute; width:28rem; height:28rem; border:1px solid #ffffff22;
       border-radius:50%; right:-8rem; top:-17rem; box-shadow:0 0 0 4rem #ffffff08,0 0 0 8rem #ffffff05; }
@@ -23,14 +23,19 @@
     h1 { font: 500 clamp(2.4rem,5vw,4.6rem)/.98 Georgia,serif; margin:.45rem 0 .8rem; letter-spacing:-.035em; }
     header p { color:#d8dfda; max-width:47rem; margin:0; font-size:1rem; }
     .stats { display:grid; grid-template-columns:repeat(5,minmax(8rem,1fr)); gap:1px; background:#ffffff24;
-      margin:2rem 0 -5.6rem; position:relative; z-index:1; border:1px solid #ffffff22; border-radius:10px;
+      margin:2rem 0 0; position:relative; z-index:1; border:1px solid #ffffff22; border-radius:10px;
       overflow:hidden; box-shadow:var(--shadow); }
     .stat { background:#214a40; padding:1rem 1.2rem; min-height:5rem; }
     .stat strong { display:block; font:500 1.65rem Georgia,serif; }
     .stat span { color:#c6d1cc; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; }
-    main { max-width:1500px; margin:5.3rem auto 3rem; padding:0 clamp(1rem,3vw,3rem); }
+    main { max-width:1500px; margin:2rem auto 3rem; padding:0 clamp(1rem,3vw,3rem); }
     .filters { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:1rem;
-      display:grid; grid-template-columns:minmax(14rem,2fr) repeat(4,minmax(9rem,1fr)); gap:.75rem; box-shadow:var(--shadow); }
+      display:grid; grid-template-columns:minmax(16rem,2fr) repeat(3,minmax(10rem,1fr)); gap:.75rem; box-shadow:var(--shadow); }
+    .advanced { grid-column:1/-1; border-top:1px solid var(--line); padding-top:.75rem; }
+    .advanced summary { cursor:pointer; color:var(--green); font-weight:700; }
+    .advanced-grid { display:grid; grid-template-columns:repeat(5,minmax(9rem,1fr)); gap:.75rem; margin-top:.8rem; }
+    .check { display:flex; align-items:center; gap:.5rem; padding-top:1.55rem; }
+    .check input { width:auto; margin:0; }
     label { display:block; color:var(--muted); font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700; }
     input, select { width:100%; margin-top:.35rem; padding:.7rem .75rem; border:1px solid var(--line);
       border-radius:7px; background:white; color:var(--ink); outline:none; }
@@ -74,10 +79,10 @@
     .pager button:disabled { opacity:.35; cursor:default; }
     .loading { opacity:.55; pointer-events:none; }
     @media (max-width:900px) {
-      .stats { grid-template-columns:repeat(2,1fr); } .filters { grid-template-columns:1fr 1fr; }
+      .stats { grid-template-columns:repeat(2,1fr); } .filters,.advanced-grid { grid-template-columns:1fr 1fr; }
       .workspace { grid-template-columns:1fr; } #people { max-height:26rem; } .detail { min-height:20rem; }
     }
-    @media (max-width:560px) { .filters { grid-template-columns:1fr; } .stats { margin-bottom:-7rem; } main { margin-top:6.8rem; } }
+    @media (max-width:560px) { .filters,.advanced-grid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -89,11 +94,29 @@
   </header>
   <main>
     <section class="filters" aria-label="Bibliography filters">
-      <label>Search<input id="search" type="search" placeholder="Laureate name or Nobel ID"></label>
+      <label>Search<input id="search" type="search" placeholder="Title, laureate, ISBN, OCLC, or source ID"></label>
       <label>Prize category<select id="category"><option value="">All categories</option></select></label>
-      <label>Award year<select id="year"><option value="">All years</option></select></label>
       <label>Subfield<select id="subfield"><option value="">All subfields</option></select></label>
       <label>Book coverage<select id="bookStatus"><option value="all">All laureates</option><option value="with_books">With candidates</option><option value="zero_books">Zero candidates</option></select></label>
+      <details class="advanced" open><summary>Advanced bibliography filters</summary><div class="advanced-grid">
+        <label>Award year from<input id="awardFrom" type="number" min="1901"></label>
+        <label>Award year to<input id="awardTo" type="number" min="1901"></label>
+        <label>Publication year from<input id="publicationFrom" type="number"></label>
+        <label>Publication year to<input id="publicationTo" type="number"></label>
+        <label class="check"><input id="unknownYear" type="checkbox" checked>Include unknown publication years</label>
+        <label>Edition count<select id="editionCount"><option value="any">Any</option><option value="none">None identified</option><option value="one">Exactly one</option><option value="multiple">Multiple</option></select></label>
+        <label>Minimum editions<input id="minEditions" type="number" min="0"></label>
+        <label>Maximum editions<input id="maxEditions" type="number" min="0"></label>
+        <label>Review status<select id="reviewStatus"><option value="">All statuses</option></select></label>
+        <label>Relationship role<select id="role"><option value="">All roles</option></select></label>
+        <label>Work type<select id="workType"><option value="">All work types</option></select></label>
+        <label>Audience<select id="audience"><option value="">All audiences</option></select></label>
+        <label>Evidence source<select id="source"><option value="">All sources</option></select></label>
+        <label>Minimum confidence<select id="minConfidence"><option value="">Any</option><option value="0.5">50%</option><option value="0.65">65%</option><option value="0.8">80%</option><option value="0.9">90%</option></select></label>
+        <label>Minimum technicality<select id="minTechnicality"><option value="">Any</option><option value="0.4">40%</option><option value="0.7">70%</option><option value="0.9">90%</option></select></label>
+        <label>Minimum sources<select id="minSources"><option value="">Any</option><option value="2">2 sources</option><option value="3">3 sources</option></select></label>
+        <label class="check"><input id="curatedOnly" type="checkbox">Curated bibliography only</label>
+      </div></details>
     </section>
     <section class="workspace">
       <aside class="results">
@@ -108,7 +131,7 @@
   </main>
   <script>
     const $ = id => document.getElementById(id);
-    const state = {offset:0, limit:100, total:0, selected:null};
+    const state = {offset:0, limit:100, total:0, selected:null, workOffset:0, workLimit:100};
     const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     const label = value => String(value || "unresolved").replaceAll("_"," ").replace(/\b\w/g,c=>c.toUpperCase());
     const pct = value => value == null ? "—" : `${Math.round(value*100)}%`;
@@ -116,8 +139,14 @@
       const p = new URLSearchParams({limit:state.limit,offset:state.offset,book_status:$("bookStatus").value});
       if($("search").value.trim()) p.set("q",$("search").value.trim());
       if($("category").value) p.set("category",$("category").value);
-      if($("year").value) p.set("award_year",$("year").value);
       if($("subfield").value) p.set("subfield",$("subfield").value);
+      const fields={awardFrom:"award_year_from",awardTo:"award_year_to",publicationFrom:"publication_year_from",
+        publicationTo:"publication_year_to",editionCount:"edition_count",minEditions:"min_editions",maxEditions:"max_editions",
+        reviewStatus:"review_status",role:"role",workType:"work_type",audience:"audience",source:"source",
+        minConfidence:"min_confidence",minTechnicality:"min_technicality",minSources:"min_sources"};
+      Object.entries(fields).forEach(([id,key])=>{if($(id).value)p.set(key,$(id).value)});
+      p.set("include_unknown_year",$("unknownYear").checked);
+      p.set("curated_only",$("curatedOnly").checked);
       return p;
     };
     async function initialize(){
@@ -125,8 +154,13 @@
       const cards=[["laureates","Laureates"],["works","Canonical works"],["editions","Editions"],["relationships","Relationships"],["zero_book_laureates","Zero candidates"]];
       $("stats").innerHTML=cards.map(([key,name])=>`<div class="stat"><strong>${stats[key].toLocaleString()}</strong><span>${name}</span></div>`).join("");
       filters.categories.forEach(v=>$("category").add(new Option(label(v),v)));
-      filters.award_years.forEach(v=>$("year").add(new Option(v,v)));
       filters.subfields.forEach(v=>$("subfield").add(new Option(v,v)));
+      [["reviewStatus",filters.review_statuses],["role",filters.roles],["workType",filters.work_types],
+       ["audience",filters.audiences],["source",filters.sources]].forEach(([id,values])=>
+        values.filter(Boolean).forEach(v=>$(id).add(new Option(label(v),v))));
+      if(filters.award_years.length){$("awardFrom").placeholder=Math.min(...filters.award_years);$("awardTo").placeholder=Math.max(...filters.award_years)}
+      if(filters.publication_years.min)$("publicationFrom").placeholder=filters.publication_years.min;
+      if(filters.publication_years.max)$("publicationTo").placeholder=filters.publication_years.max;
       await loadPeople();
     }
     async function loadPeople(){
@@ -142,23 +176,58 @@
           <span class="dot">${person.work_count} works</span>${person.review_count?`<span class="dot">${person.review_count} to review</span>`:""}</div></button>`;
       }).join("") || `<div class="detail-empty"><p>No laureates match these filters.</p></div>`;
       $("people").classList.remove("loading");
-      document.querySelectorAll(".person").forEach(el=>el.onclick=()=>loadDetail(el.dataset.id));
+      document.querySelectorAll(".person").forEach(el=>el.onclick=()=>loadDetail(el.dataset.id,0));
     }
     function sourceLink(source){
       const text=`${label(source.source)}${source.entity_id?` · ${source.entity_id}`:""}`;
       return source.url?`<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(text)}</a>`:escapeHtml(text);
     }
-    async function loadDetail(id){
-      state.selected=id; document.querySelectorAll(".person").forEach(el=>el.classList.toggle("active",el.dataset.id===id));
+    function workMatches(work, laureateName){
+      const needle=$("search").value.trim().toLowerCase();
+      if(needle && !laureateName.toLowerCase().includes(needle) && !work.title.toLowerCase().includes(needle) &&
+        !work.editions.some(e=>[e.title,e.isbn10,e.isbn13,e.oclc].some(v=>String(v||"").toLowerCase().includes(needle))) &&
+        !work.sources.some(s=>String(s.entity_id||"").toLowerCase().includes(needle))) return false;
+      const year=work.year;
+      if($("publicationFrom").value && year!=null && year<Number($("publicationFrom").value))return false;
+      if($("publicationTo").value && year!=null && year>Number($("publicationTo").value))return false;
+      if(!$("unknownYear").checked && year==null && ($("publicationFrom").value||$("publicationTo").value))return false;
+      const count=work.edition_count, mode=$("editionCount").value;
+      if(mode==="none"&&count!==0||mode==="one"&&count!==1||mode==="multiple"&&count<2)return false;
+      if($("minEditions").value&&count<Number($("minEditions").value))return false;
+      if($("maxEditions").value&&count>Number($("maxEditions").value))return false;
+      if($("reviewStatus").value&&work.review_status!==$("reviewStatus").value)return false;
+      if($("role").value&&work.role!==$("role").value)return false;
+      if($("workType").value&&work.classification!==$("workType").value)return false;
+      if($("audience").value&&work.audience!==$("audience").value)return false;
+      if($("source").value&&!work.sources.some(s=>s.source===$("source").value))return false;
+      if($("minConfidence").value&&(work.relationship_confidence||0)<Number($("minConfidence").value))return false;
+      if($("minTechnicality").value&&(work.technicality||0)<Number($("minTechnicality").value))return false;
+      if($("minSources").value&&work.source_count<Number($("minSources").value))return false;
+      if($("curatedOnly").checked&&!(["verified","auto_accepted"].includes(work.review_status)))return false;
+      return true;
+    }
+    async function loadDetail(id,workOffset=0){
+      state.selected=id; state.workOffset=workOffset;
+      document.querySelectorAll(".person").forEach(el=>el.classList.toggle("active",el.dataset.id===id));
       $("detail").innerHTML=`<div class="detail-empty"><p>Loading bibliography…</p></div>`;
-      const p=await fetch(`/api/laureates/${encodeURIComponent(id)}`).then(r=>r.json());
+      let p;
+      try {
+        const response=await fetch(`/api/laureates/${encodeURIComponent(id)}?work_limit=${state.workLimit}&work_offset=${workOffset}`);
+        if(!response.ok)throw new Error(`HTTP ${response.status}`);
+        p=await response.json();
+      } catch(error) {
+        $("detail").innerHTML=`<div class="detail-empty"><p>Could not load this bibliography. Please try again.</p></div>`;
+        return;
+      }
       const prizes=p.prizes.map(prize=>`<article class="prize"><strong>${label(prize.category)} · ${prize.year}</strong>
         ${prize.subfield?` <span class="pill gold">${escapeHtml(prize.subfield)}</span>`:""}
         ${prize.award_summary?`<p>“${escapeHtml(prize.award_summary)}”</p>`:`<p>No award summary recorded.</p>`}</article>`).join("");
       const identifiers=p.identifiers.map(i=>i.url?`<a class="pill" href="${escapeHtml(i.url)}" target="_blank" rel="noreferrer">${escapeHtml(i.scheme)} · ${escapeHtml(i.value)}</a>`:`<span class="pill">${escapeHtml(i.scheme)} · ${escapeHtml(i.value)}</span>`).join(" ");
-      const works=p.works.map(work=>`<details class="work"><summary><div><h4>${escapeHtml(work.title)}</h4>
+      const visibleWorks=p.works.filter(work=>workMatches(work,p.name));
+      const works=visibleWorks.map(work=>`<details class="work"><summary><div><h4>${escapeHtml(work.title)}</h4>
         <div class="work-meta"><span class="pill">${work.year||"Year unknown"}</span><span class="pill">${label(work.role)}</span>
-        <span class="pill gold">${label(work.classification)}</span><span class="pill">${label(work.review_status)}</span></div></div><span class="chevron">›</span></summary>
+        <span class="pill gold">${label(work.classification)}</span><span class="pill">${label(work.review_status)}</span>
+        <span class="pill">${work.edition_count} edition${work.edition_count===1?"":"s"}</span><span class="pill">${work.source_count} source${work.source_count===1?"":"s"}</span></div></div><span class="chevron">›</span></summary>
         <div class="work-body">${work.original_title?`<p><strong>Original title:</strong> ${escapeHtml(work.original_title)}</p>`:""}
         ${work.description?`<p>${escapeHtml(work.description)}</p>`:""}<p><strong>Audience:</strong> ${label(work.audience)} ·
         <strong>Technicality:</strong> ${pct(work.technicality)} · <strong>Relationship confidence:</strong> ${pct(work.relationship_confidence)}</p>
@@ -167,16 +236,30 @@
         <h5>Editions (${work.editions.length})</h5><div class="edition-list">${work.editions.map(e=>`<div class="edition"><strong>${escapeHtml(e.title)}</strong>
         <div class="person-meta"><span>${e.year||"Year unknown"}</span>${e.language?`<span class="dot">${escapeHtml(e.language)}</span>`:""}
         ${e.publisher?`<span class="dot">${escapeHtml(e.publisher)}</span>`:""}${e.isbn13?`<span class="dot">ISBN ${escapeHtml(e.isbn13)}</span>`:""}
-        ${e.oclc?`<span class="dot">OCLC ${escapeHtml(e.oclc)}</span>`:""}</div></div>`).join("")||"<span>No editions linked.</span>"}</div></div></details>`).join("");
+        ${e.oclc?`<span class="dot">OCLC ${escapeHtml(e.oclc)}</span>`:""}</div>
+        <div class="person-meta">${e.amazon_rating?`<a href="${escapeHtml(e.amazon_rating.source_url)}" target="_blank" rel="noreferrer">★ ${e.amazon_rating.stars.toFixed(1)} · ${e.amazon_rating.review_count.toLocaleString()} Amazon ratings</a>
+        <span class="dot">${escapeHtml(e.amazon_rating.marketplace)} · observed ${escapeHtml(e.amazon_rating.observed_at.slice(0,10))}</span>`:
+        `<a href="${escapeHtml(e.amazon_search_url)}" target="_blank" rel="noreferrer">Find this edition on Amazon</a>`}</div></div>`).join("")||"<span>No editions linked.</span>"}</div></div></details>`).join("");
       $("detail").innerHTML=`<div class="detail-inner"><div class="detail-title"><div><div class="eyebrow">Nobel laureate</div>
         <h2>${escapeHtml(p.name)}</h2><div class="id">Nobel API ID ${escapeHtml(p.nobel_api_id)}
         ${p.birth_date?` · ${escapeHtml(p.birth_date)}`:""}${p.death_date?`–${escapeHtml(p.death_date)}`:""}</div></div>
-        <span class="pill gold">${p.work_count} candidate works</span></div><div class="prizes">${prizes}</div>
+        <span class="pill gold">${visibleWorks.length}${p.works_truncated?` of ${p.work_total}`:""} matching works</span></div><div class="prizes">${prizes}</div>
         <div>${identifiers}</div><div class="section-head" style="padding:1.6rem 0 .7rem"><h2>Bibliography</h2>
         <span class="count">${p.verified_count} verified · ${p.review_count} to review</span></div>${works||`<div class="detail-empty" style="min-height:12rem"><p>No candidate books discovered yet.</p></div>`}</div>`;
+      if(p.work_total>state.workLimit){
+        const first=p.work_offset+1, last=p.work_offset+p.works.length;
+        $("detail").insertAdjacentHTML("beforeend",`<div class="pager"><button id="workPrev" ${p.work_offset===0?"disabled":""}>Previous books</button>
+          <span class="count">${first.toLocaleString()}–${last.toLocaleString()} of ${p.work_total.toLocaleString()}</span>
+          <button id="workNext" ${last>=p.work_total?"disabled":""}>Next books</button></div>`);
+        $("workPrev").onclick=()=>loadDetail(id,Math.max(0,p.work_offset-state.workLimit));
+        $("workNext").onclick=()=>loadDetail(id,p.work_offset+state.workLimit);
+      }
     }
-    let timer; ["search","category","year","subfield","bookStatus"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",()=>{
-      clearTimeout(timer); timer=setTimeout(()=>{state.offset=0;loadPeople()},id==="search"?250:0);
+    let timer; ["search","category","subfield","bookStatus","awardFrom","awardTo","publicationFrom","publicationTo","unknownYear",
+      "editionCount","minEditions","maxEditions","reviewStatus","role","workType","audience","source","minConfidence",
+      "minTechnicality","minSources","curatedOnly"].forEach(id=>$(id).addEventListener(
+        ["search","awardFrom","awardTo","publicationFrom","publicationTo","minEditions","maxEditions"].includes(id)?"input":"change",()=>{
+      clearTimeout(timer); timer=setTimeout(()=>{state.offset=0;loadPeople();if(state.selected)loadDetail(state.selected,0)},id==="search"?250:0);
     }));
     $("prev").onclick=()=>{state.offset=Math.max(0,state.offset-state.limit);loadPeople()};
     $("next").onclick=()=>{state.offset+=state.limit;loadPeople()};

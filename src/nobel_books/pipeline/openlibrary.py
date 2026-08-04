@@ -30,6 +30,7 @@ from nobel_books.models.database import (
 )
 from nobel_books.normalization.names import normalize_name
 from nobel_books.pipeline.discovery import _upsert_assertion
+from nobel_books.pipeline.progress import mark_laureate_progress, pending_laureates
 
 
 @dataclass
@@ -251,13 +252,17 @@ def discover_openlibrary(
     *,
     max_authors: int,
     nobel_api_id: str | None = None,
+    refresh: bool = False,
 ) -> OpenLibrarySummary:
     """Resolve a cautious cohort and retrieve verified authors' works and editions."""
 
-    query = select(Laureate).order_by(Laureate.id)
-    if nobel_api_id is not None:
-        query = query.where(Laureate.nobel_api_id == nobel_api_id)
-    laureates = session.scalars(query.limit(max_authors)).all()
+    laureates = pending_laureates(
+        session,
+        "openlibrary",
+        max_authors,
+        nobel_api_id=nobel_api_id,
+        refresh=refresh,
+    )
     run = PipelineRun(
         profile="discover-openlibrary",
         status=PipelineStatus.RUNNING,
@@ -268,10 +273,14 @@ def discover_openlibrary(
     summary = OpenLibrarySummary(authors_considered=len(laureates))
     try:
         for laureate in laureates:
+            laureate_works = 0
             try:
                 with session.begin_nested():
                     author_id = _resolve_author(session, run, laureate, adapter, cache, summary)
                     if author_id is None:
+                        mark_laureate_progress(
+                            session, laureate, "openlibrary", "succeeded", result_count=0
+                        )
                         continue
                     summary.authors_verified += 1
                     for works_fetch in adapter.author_works(author_id):
@@ -285,6 +294,7 @@ def discover_openlibrary(
                             "author_id",
                         )
                         summary.works += len(work_ids)
+                        laureate_works += len(work_ids)
                         summary.assertions += count
                         for work_id in work_ids:
                             for editions_fetch in adapter.work_editions(work_id):
@@ -301,8 +311,16 @@ def discover_openlibrary(
                                 )
                                 summary.editions += len(edition_ids)
                                 summary.assertions += edition_count
+                mark_laureate_progress(
+                    session,
+                    laureate,
+                    "openlibrary",
+                    "succeeded",
+                    result_count=laureate_works,
+                )
             except SourceUnavailableError:
                 summary.failures += 1
+                mark_laureate_progress(session, laureate, "openlibrary", "failed")
                 continue
         run.status = PipelineStatus.SUCCEEDED
         run.finished_at = datetime.now(UTC)

@@ -17,12 +17,18 @@ from nobel_books.models.database import (
     Laureate,
     SourceRecord,
 )
-from nobel_books.pipeline.discovery import discover_wikidata_candidates
+from nobel_books.pipeline.discovery import discover_wikidata_candidates, is_valid_human_title
 
 
 def fixture() -> dict[str, object]:
     path = Path(__file__).parents[1] / "fixtures" / "wikidata" / "book_results.json"
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def test_wikidata_entity_ids_are_not_titles() -> None:
+    assert not is_valid_human_title("Q136803662")
+    assert not is_valid_human_title(" q123 ")
+    assert is_valid_human_title("Quantum Mechanics")
 
 
 @respx.mock

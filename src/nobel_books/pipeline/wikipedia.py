@@ -12,7 +12,6 @@ from nobel_books.adapters.wikipedia import WikipediaAdapter, WikipediaFetch
 from nobel_books.cache import RawResponseCache
 from nobel_books.errors import SourceUnavailableError
 from nobel_books.models.database import (
-    Laureate,
     PipelineRun,
     PipelineStatus,
     SourceFetch,
@@ -20,6 +19,7 @@ from nobel_books.models.database import (
 )
 from nobel_books.normalization.titles import normalize_title
 from nobel_books.pipeline.discovery import _upsert_assertion
+from nobel_books.pipeline.progress import mark_laureate_progress, pending_laureates
 
 LIST_ITEM = re.compile(r"^\s*[*#]\s*(.+?)\s*$")
 CITE_BOOK = re.compile(r"\{\{\s*cite\s+book\s*\|(.*?)\}\}", re.IGNORECASE)
@@ -151,11 +151,15 @@ def discover_wikipedia(
     headings: list[str],
     max_authors: int,
     nobel_api_id: str | None = None,
+    refresh: bool = False,
 ) -> WikipediaSummary:
-    query = select(Laureate).order_by(Laureate.id)
-    if nobel_api_id is not None:
-        query = query.where(Laureate.nobel_api_id == nobel_api_id)
-    laureates = session.scalars(query.limit(max_authors)).all()
+    laureates = pending_laureates(
+        session,
+        "wikipedia",
+        max_authors,
+        nobel_api_id=nobel_api_id,
+        refresh=refresh,
+    )
     run = PipelineRun(
         profile="discover-wikipedia",
         status=PipelineStatus.RUNNING,
@@ -166,6 +170,8 @@ def discover_wikipedia(
     summary = WikipediaSummary(laureates_considered=len(laureates))
     normalized_headings = {normalize_title(heading) for heading in headings}
     for laureate in laureates:
+        failures_before = summary.failures
+        candidates_before = summary.candidates
         try:
             metadata = adapter.sections(laureate.display_name)
             _record_fetch(session, run, metadata, cache)
@@ -241,6 +247,13 @@ def discover_wikipedia(
                     summary.failures += 1
         except (SourceUnavailableError, KeyError, TypeError, ValueError):
             summary.failures += 1
+        mark_laureate_progress(
+            session,
+            laureate,
+            "wikipedia",
+            "succeeded" if summary.failures == failures_before else "failed",
+            result_count=summary.candidates - candidates_before,
+        )
     run.status = PipelineStatus.SUCCEEDED
     run.finished_at = datetime.now(UTC)
     session.commit()
