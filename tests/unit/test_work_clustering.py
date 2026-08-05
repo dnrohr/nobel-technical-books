@@ -4,17 +4,22 @@ from pathlib import Path
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from nobel_books.classification.classifier import score_relationships
 from nobel_books.db import make_engine, upgrade_database
 from nobel_books.models.database import (
     CanonicalWork,
+    Contribution,
     Edition,
     EditionSourceRecord,
+    ExternalIdentity,
+    Laureate,
     ManualOverride,
     PipelineRun,
     PipelineStatus,
     SourceFetch,
     SourceRecord,
     WorkRelation,
+    WorkSourceRecord,
 )
 from nobel_books.reconciliation.works import cluster_works
 
@@ -163,4 +168,90 @@ overrides:
         assert second.overrides_applied == 1
         assert review_path.exists()
         assert session.scalar(select(func.count()).select_from(CanonicalWork)) >= 2
+    engine.dispose()
+
+
+def test_exact_title_and_verified_laureate_merge_independent_sources(tmp_path: Path) -> None:
+    database_url = f"sqlite:///{tmp_path / 'cross-source.sqlite3'}"
+    upgrade_database(database_url)
+    engine = make_engine(database_url)
+    now = datetime.now(UTC)
+    review_path = tmp_path / "review.csv"
+    with Session(engine) as session:
+        laureate = Laureate(
+            nobel_api_id="1",
+            display_name="Example Laureate",
+            created_at=now,
+            updated_at=now,
+        )
+        session.add(laureate)
+        session.flush()
+        session.add(
+            ExternalIdentity(
+                laureate_id=laureate.id,
+                scheme="openlibrary",
+                value="OL1A",
+                canonical_url="https://openlibrary.org/authors/OL1A",
+                resolution_status="verified",
+                confidence=1.0,
+                evidence_json={},
+            )
+        )
+        run = PipelineRun(profile="fixture", status=PipelineStatus.SUCCEEDED, started_at=now)
+        session.add(run)
+        session.flush()
+        fetch = SourceFetch(
+            pipeline_run_id=run.id,
+            source="fixture",
+            request_url="https://example.invalid/cross-source",
+            request_key="c" * 64,
+            fetched_at=now,
+            status_code=200,
+            content_hash="d" * 64,
+            cache_path="cross-source.json",
+        )
+        session.add(fetch)
+        session.flush()
+        session.add_all(
+            [
+                SourceRecord(
+                    source_fetch_id=fetch.id,
+                    source="openlibrary",
+                    source_entity_type="work",
+                    source_entity_id="OL1W",
+                    raw_json={
+                        "title": "The Example Book",
+                        "author_id": "OL1A",
+                        "first_publish_date": "1950",
+                    },
+                    source_url="https://openlibrary.org/works/OL1W",
+                ),
+                SourceRecord(
+                    source_fetch_id=fetch.id,
+                    source="wikipedia",
+                    source_entity_type="work",
+                    source_entity_id="WIKI1",
+                    raw_json={
+                        "title": "The Example Book",
+                        "year": 1950,
+                        "candidate_for_laureate_id": laureate.id,
+                    },
+                    source_url="https://wikipedia.org/wiki/Example",
+                ),
+            ]
+        )
+        session.commit()
+
+        summary = cluster_works(
+            session, override_path=tmp_path / "none.yaml", review_path=review_path
+        )
+        score_relationships(session)
+        links = session.scalars(select(WorkSourceRecord)).all()
+        author = session.scalar(select(Contribution).where(Contribution.role == "author"))
+
+        assert summary.works == 1
+        assert len(links) == 2
+        assert len({link.canonical_work_id for link in links}) == 1
+        assert author is not None
+        assert author.relationship_confidence == 0.85
     engine.dispose()

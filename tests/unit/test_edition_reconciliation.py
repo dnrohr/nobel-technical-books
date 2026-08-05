@@ -148,3 +148,30 @@ def test_exact_isbn_merge_conflict_blocking_and_input_order_determinism(tmp_path
     assert any(
         status == "blocked" and pair in {("A", "C"), ("B", "C")} for status, _, pair in proposals
     )
+
+
+def test_reconciliation_removes_stale_editions(tmp_path: Path) -> None:
+    database_url = f"sqlite:///{tmp_path / 'stale.sqlite3'}"
+    upgrade_database(database_url)
+    engine = make_engine(database_url)
+    with Session(engine) as session:
+        add_records(session, ["A", "B"])
+        reconcile_editions(session)
+        session.add(
+            Edition(
+                cluster_key="stale",
+                title="Stale edition",
+                normalized_title="stale edition",
+                review_status="unreviewed",
+                overall_confidence=0.7,
+                merge_method="singleton",
+                identifier_issues=[],
+            )
+        )
+        session.commit()
+
+        reconcile_editions(session)
+
+        assert session.scalar(select(Edition).where(Edition.cluster_key == "stale")) is None
+        assert len(session.scalars(select(Edition)).all()) == 1
+    engine.dispose()

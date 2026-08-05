@@ -152,6 +152,7 @@ def discover_wikipedia(
     max_authors: int,
     nobel_api_id: str | None = None,
     refresh: bool = False,
+    zero_results_only: bool = False,
 ) -> WikipediaSummary:
     laureates = pending_laureates(
         session,
@@ -159,6 +160,7 @@ def discover_wikipedia(
         max_authors,
         nobel_api_id=nobel_api_id,
         refresh=refresh,
+        zero_results_only=zero_results_only,
     )
     run = PipelineRun(
         profile="discover-wikipedia",

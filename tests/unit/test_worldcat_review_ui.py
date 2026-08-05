@@ -104,9 +104,7 @@ def test_review_ui_writes_standard_manual_override(tmp_path: Path) -> None:
     assert detail["work_total"] == 1
     assert detail["work_offset"] == 0
     assert detail["works_truncated"] is False
-    next_page = client.get(
-        "/api/laureates/1", params={"work_limit": 1, "work_offset": 1}
-    ).json()
+    next_page = client.get("/api/laureates/1", params={"work_limit": 1, "work_offset": 1}).json()
     assert next_page["works"] == []
     assert next_page["work_total"] == 1
     assert next_page["work_offset"] == 1

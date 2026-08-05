@@ -253,6 +253,7 @@ def discover_openlibrary(
     max_authors: int,
     nobel_api_id: str | None = None,
     refresh: bool = False,
+    zero_results_only: bool = False,
 ) -> OpenLibrarySummary:
     """Resolve a cautious cohort and retrieve verified authors' works and editions."""
 
@@ -262,6 +263,7 @@ def discover_openlibrary(
         max_authors,
         nobel_api_id=nobel_api_id,
         refresh=refresh,
+        zero_results_only=zero_results_only,
     )
     run = PipelineRun(
         profile="discover-openlibrary",

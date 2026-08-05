@@ -171,6 +171,11 @@ def test_manual_classification_and_relationship_thresholds(tmp_path: Path) -> No
     author = next(item for item in contributions if item.role == "author")
     unknown = next(item for item in contributions if item.role == "unknown")
     assert author.relationship_confidence == 0.85
+    assert {item["source"] for item in author.evidence_json} == {
+        "wikidata",
+        "openlibrary",
+        "wikipedia",
+    }
     assert author.review_status == "provisional"
     assert author.is_default_included
     assert unknown.relationship_confidence == 0.0

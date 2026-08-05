@@ -9,9 +9,11 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from nobel_books.models.database import (
+    Contribution,
     Edition,
     EditionMergeProposal,
     EditionSourceRecord,
+    RetailRatingObservation,
     SourceRecord,
 )
 from nobel_books.normalization.dates import parse_date
@@ -236,6 +238,9 @@ def reconcile_editions(session: Session) -> tuple[int, int]:
     candidates.sort(key=lambda candidate: candidate.logical_key)
     union = UnionFind([candidate.logical_key for candidate in candidates])
     session.execute(delete(EditionMergeProposal))
+    # Membership is derived from the current source records. Rebuild it so a
+    # record that moves to a different cluster cannot leave an orphan edition.
+    session.execute(delete(EditionSourceRecord))
     for index, left in enumerate(candidates):
         for right in candidates[index + 1 :]:
             exact = _exact_match(left, right)
@@ -268,6 +273,7 @@ def reconcile_editions(session: Session) -> tuple[int, int]:
     for candidate in candidates:
         groups.setdefault(union.find(candidate.logical_key), []).append(candidate)
     source_priority = {"wikidata": 0, "openlibrary": 1, "google_books": 2}
+    active_edition_ids: set[int] = set()
     for members in groups.values():
         members.sort(
             key=lambda candidate: (
@@ -291,6 +297,7 @@ def reconcile_editions(session: Session) -> tuple[int, int]:
             )
             session.add(edition)
             session.flush()
+        active_edition_ids.add(edition.id)
         edition.title = preferred.title
         edition.subtitle = preferred.subtitle
         edition.normalized_title = preferred.normalized_title
@@ -342,5 +349,22 @@ def reconcile_editions(session: Session) -> tuple[int, int]:
                 link = EditionSourceRecord(source_record_id=member.record.id)
                 session.add(link)
             link.edition_id = edition.id
+
+    stale_edition_ids = set(session.scalars(select(Edition.id)).all()) - active_edition_ids
+    if stale_edition_ids:
+        rated_stale_ids = set(
+            session.scalars(
+                select(RetailRatingObservation.edition_id).where(
+                    RetailRatingObservation.edition_id.in_(stale_edition_ids)
+                )
+            ).all()
+        )
+        if rated_stale_ids:
+            raise ValueError(
+                "Cannot remove stale editions with retail rating observations: "
+                f"{sorted(rated_stale_ids)}"
+            )
+        session.execute(delete(Contribution).where(Contribution.edition_id.in_(stale_edition_ids)))
+        session.execute(delete(Edition).where(Edition.id.in_(stale_edition_ids)))
     session.commit()
     return len(groups), len(session.scalars(select(EditionMergeProposal)).all())

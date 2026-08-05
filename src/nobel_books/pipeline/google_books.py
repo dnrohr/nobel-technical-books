@@ -183,6 +183,7 @@ def discover_google_books(
     max_authors: int,
     nobel_api_id: str | None = None,
     refresh: bool = False,
+    zero_results_only: bool = False,
 ) -> GoogleBooksSummary:
     laureates = pending_laureates(
         session,
@@ -190,6 +191,7 @@ def discover_google_books(
         max_authors,
         nobel_api_id=nobel_api_id,
         refresh=refresh,
+        zero_results_only=zero_results_only,
     )
     run = PipelineRun(
         profile="discover-google-books",

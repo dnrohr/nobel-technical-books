@@ -309,11 +309,29 @@ def relationship_evidence(session: Session) -> list[RelationshipEvidence]:
 
 def score_relationships(session: Session) -> ClassificationSummary:
     grouped: dict[tuple[int, int, str], list[RelationshipEvidence]] = defaultdict(list)
+    work_evidence: dict[tuple[int, int], list[RelationshipEvidence]] = defaultdict(list)
     for item in relationship_evidence(session):
         grouped[(item.laureate_id, item.work_id, item.role)].append(item)
+        work_evidence[(item.laureate_id, item.work_id)].append(item)
+    existing = {
+        (
+            contribution.laureate_id,
+            contribution.canonical_work_id,
+            contribution.edition_id,
+            contribution.role,
+        ): contribution
+        for contribution in session.scalars(select(Contribution)).all()
+    }
     summary = ClassificationSummary()
     for (laureate_id, work_id, role), items in grouped.items():
-        sources = {item.source for item in items}
+        supporting_items = items
+        if role != "unknown":
+            supporting_items = [
+                item
+                for item in work_evidence[(laureate_id, work_id)]
+                if item.role in {role, "unknown"}
+            ]
+        sources = {item.source for item in supporting_items}
         confidence = max(item.strength for item in items)
         if len(sources) >= 2:
             confidence += 0.2
@@ -332,14 +350,7 @@ def score_relationships(session: Session) -> ClassificationSummary:
             status, included = "needs_review", False
         else:
             status, included = "rejected", False
-        contribution = session.scalar(
-            select(Contribution).where(
-                Contribution.laureate_id == laureate_id,
-                Contribution.canonical_work_id == work_id,
-                Contribution.edition_id.is_(None),
-                Contribution.role == role,
-            )
-        )
+        contribution = existing.pop((laureate_id, work_id, None, role), None)
         if contribution is None:
             contribution = Contribution(
                 laureate_id=laureate_id,
@@ -360,7 +371,7 @@ def score_relationships(session: Session) -> ClassificationSummary:
                 "strength": item.strength,
                 "stable_identity": item.stable_identity,
             }
-            for item in items
+            for item in supporting_items
         ]
         laureate = session.get(Laureate, laureate_id)
         work = session.get(CanonicalWork, work_id)
@@ -392,5 +403,7 @@ def score_relationships(session: Session) -> ClassificationSummary:
                 ]
         summary.contributions += 1
         summary.contribution_reviews += int(not contribution.is_default_included)
+    for stale_contribution in existing.values():
+        session.delete(stale_contribution)
     session.commit()
     return summary

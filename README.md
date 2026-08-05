@@ -27,6 +27,7 @@ uv run nobel-books identities resolve
 uv run nobel-books identities review-export
 uv run nobel-books discover --source wikidata
 uv run nobel-books discover --source openlibrary
+uv run nobel-books discover --source openlibrary --zero-results-only
 uv run nobel-books discover --source google-books --laureate-id 102
 uv run nobel-books normalize
 uv run nobel-books reconcile editions
@@ -101,6 +102,13 @@ never guessed into verified identities. Author-work and work-edition pages are
 fully traversed, cached, and retained as source-native records with edition-to-work
 links and field-level assertions. The review queue is written to
 `data/exports/openlibrary_identity_review.csv`.
+
+Discovery normally continues from durable per-source completion markers. Add
+`--zero-results-only` to Open Library, Google Books, or Wikipedia discovery to
+limit the next cohort to laureates with no canonical contributions in the
+current explorer database. Existing source records and raw cache files are kept;
+the mode only narrows which laureates are queried. Combine it with `--refresh`
+to retry previously completed zero-result laureates.
 
 ## Milestone 5 behavior
 

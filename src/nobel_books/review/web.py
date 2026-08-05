@@ -532,9 +532,9 @@ def create_review_app(engine: Engine) -> FastAPI:
             .where(Contribution.laureate_id == laureate.id, _valid_title_clause())
             .order_by(CanonicalWork.first_publication_year, CanonicalWork.preferred_title)
         )
-        work_total = session.scalar(
-            select(func.count()).select_from(contribution_query.subquery())
-        ) or 0
+        work_total = (
+            session.scalar(select(func.count()).select_from(contribution_query.subquery())) or 0
+        )
         contribution_rows = session.execute(
             contribution_query.offset(work_offset).limit(work_limit)
         ).all()

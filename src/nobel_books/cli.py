@@ -231,6 +231,13 @@ def discover(
         bool,
         typer.Option("--refresh", help="Reprocess completed laureates instead of continuing."),
     ] = False,
+    zero_results_only: Annotated[
+        bool,
+        typer.Option(
+            "--zero-results-only",
+            help="Query only laureates with no canonical book contributions.",
+        ),
+    ] = False,
 ) -> None:
     """Discover source-native book candidates without canonical merging."""
 
@@ -243,6 +250,16 @@ def discover(
         "wikipedia",
     }:
         typer.echo(f"Error: source is not implemented: {source_name}", err=True)
+        raise typer.Exit(code=1)
+    if zero_results_only and source_name not in {
+        "openlibrary",
+        "google-books",
+        "wikipedia",
+    }:
+        typer.echo(
+            "Error: --zero-results-only is supported for openlibrary, google-books, and wikipedia.",
+            err=True,
+        )
         raise typer.Exit(code=1)
     settings = get_settings()
     config_key = source_name.replace("-", "_")
@@ -288,6 +305,7 @@ def discover(
                     max_authors=source.max_authors_per_run,
                     nobel_api_id=laureate_id,
                     refresh=refresh,
+                    zero_results_only=zero_results_only,
                 )
                 review_path = Path("data/exports/openlibrary_identity_review.csv")
                 review_count = export_openlibrary_identity_review(session, review_path)
@@ -315,6 +333,7 @@ def discover(
                     max_authors=source.max_authors_per_run,
                     nobel_api_id=laureate_id,
                     refresh=refresh,
+                    zero_results_only=zero_results_only,
                 )
                 message = (
                     f"Google Books: queries={google_summary.queries}, "
@@ -390,6 +409,7 @@ def discover(
                     max_authors=source.max_authors_per_run,
                     nobel_api_id=laureate_id,
                     refresh=refresh,
+                    zero_results_only=zero_results_only,
                 )
                 message = (
                     f"Wikipedia: pages={wikipedia.pages_with_sections}, "

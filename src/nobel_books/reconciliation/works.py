@@ -2,6 +2,8 @@
 
 import csv
 import hashlib
+from collections import defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -15,8 +17,10 @@ from sqlalchemy.orm import Session
 
 from nobel_books.models.database import (
     CanonicalWork,
+    Contribution,
     Edition,
     EditionSourceRecord,
+    ExternalIdentity,
     ManualOverride,
     SourceRecord,
     WorkMergeProposal,
@@ -68,6 +72,136 @@ def _source_token(source: str, source_id: str) -> str:
 
 def _qid(value: str) -> str:
     return value.rstrip("/").rsplit("/", 1)[-1]
+
+
+def _integer_values(value: object) -> set[int]:
+    if isinstance(value, int):
+        return {value}
+    if isinstance(value, str) and value.isdigit():
+        return {int(value)}
+    if isinstance(value, dict):
+        return {number for item in value.values() for number in _integer_values(item)}
+    if isinstance(value, list):
+        return {number for item in value for number in _integer_values(item)}
+    return set()
+
+
+def _identity_maps(session: Session) -> dict[str, dict[str, int]]:
+    result: dict[str, dict[str, int]] = defaultdict(dict)
+    identities = session.scalars(
+        select(ExternalIdentity).where(ExternalIdentity.resolution_status == "verified")
+    )
+    for identity in identities:
+        value = identity.value.rstrip("/").rsplit("/", 1)[-1]
+        result[identity.scheme][value] = identity.laureate_id
+    return result
+
+
+def _record_laureates(
+    record: SourceRecord,
+    identities: dict[str, dict[str, int]],
+) -> set[int]:
+    raw: dict[str, Any] = dict(record.raw_json)
+    if record.source == "wikidata":
+        return {
+            laureate_id
+            for value in _strings(raw.get("person"))
+            if (laureate_id := identities["wikidata"].get(_qid(value))) is not None
+        }
+    if record.source == "openlibrary":
+        return {
+            laureate_id
+            for value in _strings(raw.get("author_id"))
+            if (laureate_id := identities["openlibrary"].get(value.rstrip("/").rsplit("/", 1)[-1]))
+            is not None
+        }
+    return _integer_values(raw.get("candidate_for_laureate_id"))
+
+
+def _record_titles(record: SourceRecord) -> set[str]:
+    raw: dict[str, Any] = dict(record.raw_json)
+    return {
+        normalized
+        for key in ("title", "itemLabel")
+        for title in _strings(raw.get(key))
+        if is_valid_human_title(title)
+        if (normalized := normalize_title(title))
+    }
+
+
+def _record_years(record: SourceRecord) -> set[int]:
+    raw: dict[str, Any] = dict(record.raw_json)
+    years: set[int] = set()
+    for key in ("year", "first_publish_date", "publication_date", "publish_date"):
+        for value in _strings(raw.get(key)):
+            digits = value.strip()[:4]
+            if digits.isdigit():
+                years.add(int(digits))
+        years.update(_integer_values(raw.get(key)))
+    return {year for year in years if 1000 <= year <= 2100}
+
+
+def _years_compatible(left: set[int], right: set[int]) -> bool:
+    return not left or not right or min(abs(a - b) for a in left for b in right) <= 3
+
+
+def _merge_exact_cross_source_matches(
+    session: Session,
+    union: UnionFind,
+    source_works: Sequence[SourceRecord],
+    editions: Sequence[Edition],
+    edition_records: dict[int, list[SourceRecord]],
+    edition_tokens: dict[int, set[str]],
+) -> None:
+    """Merge exact-title roots when independent sources identify the same laureate."""
+
+    identities = _identity_maps(session)
+    profiles: dict[str, WorkGroup] = {}
+    laureates: dict[str, set[int]] = defaultdict(set)
+    sources: dict[str, set[str]] = defaultdict(set)
+    titles: dict[str, set[str]] = defaultdict(set)
+    years: dict[str, set[int]] = defaultdict(set)
+
+    def add_record(root: str, record: SourceRecord) -> None:
+        profiles.setdefault(root, WorkGroup()).source_records.append(record)
+        laureates[root].update(_record_laureates(record, identities))
+        sources[root].add(record.source)
+        titles[root].update(_record_titles(record))
+        years[root].update(_record_years(record))
+
+    for record in source_works:
+        if record.source_entity_id:
+            add_record(union.find(_source_token(record.source, record.source_entity_id)), record)
+    for edition in editions:
+        root = union.find(sorted(edition_tokens[edition.id])[0])
+        profiles.setdefault(root, WorkGroup()).editions.append(edition)
+        if is_valid_human_title(edition.title):
+            titles[root].add(normalize_title(edition.title))
+        if edition.publication_year is not None:
+            years[root].add(edition.publication_year)
+        for record in edition_records[edition.id]:
+            add_record(root, record)
+
+    matches: dict[tuple[int, str], set[str]] = defaultdict(set)
+    generic_titles = {"collected papers", "collected works", "selected works", "complete works"}
+    for root in profiles:
+        if len(laureates[root]) != 1:
+            continue
+        laureate_id = next(iter(laureates[root]))
+        for title in titles[root]:
+            if title not in generic_titles and len(title) >= 8 and " " in title:
+                matches[(laureate_id, title)].add(root)
+
+    for roots in matches.values():
+        ordered = sorted(roots)
+        for index, left in enumerate(ordered):
+            for right in ordered[index + 1 :]:
+                if sources[left] == sources[right] and len(sources[left]) == 1:
+                    continue
+                if sources[left].isdisjoint(sources[right]) and _years_compatible(
+                    years[left], years[right]
+                ):
+                    union.union(left, right)
 
 
 def _edition_explicit_tokens(
@@ -272,6 +406,15 @@ def cluster_works(
             union.union(override.target_key, other)
             applied += int(override not in session.new)
 
+    _merge_exact_cross_source_matches(
+        session,
+        union,
+        source_works,
+        editions,
+        edition_records,
+        edition_tokens,
+    )
+
     groups: dict[str, WorkGroup] = {}
     for token in sorted(tokens):
         root = union.find(token)
@@ -285,8 +428,12 @@ def cluster_works(
         groups[root].editions.append(edition)
         groups[root].source_records.extend(edition_records[edition.id])
 
+    session.execute(delete(Contribution))
     session.execute(delete(WorkMergeProposal))
     session.execute(delete(WorkRelation))
+    session.execute(delete(WorkSourceRecord))
+    for edition in editions:
+        edition.canonical_work_id = None
     created: list[tuple[CanonicalWork, WorkGroup]] = []
     for group in sorted(groups.values(), key=lambda item: sorted(item.tokens)):
         has_valid_title = any(
@@ -333,6 +480,13 @@ def cluster_works(
             )
         )
         series_count += 1
+
+    active_work_ids = {work.id for work, _group in created}
+    active_work_ids.update(
+        relation.parent_work_id for relation in session.new if isinstance(relation, WorkRelation)
+    )
+    if active_work_ids:
+        session.execute(delete(CanonicalWork).where(CanonicalWork.id.not_in(active_work_ids)))
 
     review_items = 0
     works = [item[0] for item in created]

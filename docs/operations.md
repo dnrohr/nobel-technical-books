@@ -24,6 +24,17 @@ Google Books may enforce anonymous or project-specific quotas. A rate-limited
 discovery run now preserves completed queries, records the run as failed, and
 reports `stopped_early=True`; resume it later or configure `GOOGLE_BOOKS_API_KEY`.
 
+To backfill only current coverage gaps without querying laureates who already
+have canonical book contributions, run repeated small batches such as:
+
+```bash
+uv run nobel-books discover --source openlibrary --zero-results-only
+```
+
+This is additive: it preserves the raw response cache, existing source records,
+canonical works, and per-source progress markers. Reconcile once after the
+desired discovery batches rather than rebuilding after every batch.
+
 ## Review and accepted snapshots
 
 Export/import review CSVs with `nobel-books review export` and

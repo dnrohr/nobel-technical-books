@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from sqlalchemy import case, or_, select
 from sqlalchemy.orm import Session, aliased
 
-from nobel_books.models.database import DiscoveryQuery, Laureate
+from nobel_books.models.database import Contribution, DiscoveryQuery, Laureate
 
 COMPLETION_QUERY = "__laureate_complete__"
 COMPLETION_VARIANT = "laureate_complete"
@@ -18,10 +18,16 @@ def pending_laureates(
     *,
     nobel_api_id: str | None = None,
     refresh: bool = False,
+    zero_results_only: bool = False,
 ) -> list[Laureate]:
     """Select the next incomplete cohort, or an explicitly requested refresh cohort."""
 
     query = select(Laureate).where(Laureate.is_organization.is_(False))
+    if zero_results_only:
+        has_contribution = (
+            select(Contribution.id).where(Contribution.laureate_id == Laureate.id).exists()
+        )
+        query = query.where(~has_contribution)
     if nobel_api_id is not None:
         query = query.where(Laureate.nobel_api_id == nobel_api_id).order_by(Laureate.id)
     elif not refresh:
